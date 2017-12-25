@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.user.info.mapper.UserMapper">
+	<resultMap type="com.hefei.user.info.po.User" id="user">
+		<id column="ID" property="id" />
+		<result column="TYPE" property="type" />
+		<result column="NAME" property="name" />
+		<result column="IDNO" property="idNo" />
+		<result column="SEX" property="sex" />
+		<result column="BIRTHDAY" property="birthday" />
+		<result column="HUKOU_TYPE" property="hukouType" />
+		<result column="HUKOU_PROVINCE_CODE" property="hukouProvinceCode" />
+		<result column="HUKOU_CITY_CODE" property="hukouCityCode" />
+		<result column="HUKOU_AREA_CODE" property="hukouAreaCode" />
+		<result column="LIVE_PROVINCE_CODE" property="liveProvinceCode" />
+		<result column="LIVE_CITY_CODE" property="liveCityCode" />
+		<result column="LIVE_AREA_CODE" property="liveAreaCode" />
+		<result column="LIVE_ADDRESS" property="liveAddress" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<insert id="saveUser" parameterType="com.hefei.user.info.po.User">
+		<![CDATA[
+			INSERT INTO T_USER(ID,NAME,IDNO,SEX,BIRTHDAY,HUKOU_TYPE,HUKOU_PROVINCE_CODE,HUKOU_CITY_CODE,HUKOU_AREA_CODE,LIVE_PROVINCE_CODE,LIVE_CITY_CODE
+			,LIVE_AREA_CODE,LIVE_ADDRESS,DEL_FLAG,TYPE,CREATE_TIME,UPDATE_TIME)
+			VALUES(#{id},#{name},#{idNo},#{sex},#{birthday},#{hukouType},#{hukouProvinceCode},#{hukouCityCode},#{hukouAreaCode},#{liveProvinceCode},#{liveCityCode}
+			,#{liveAreaCode},#{liveAddress},#{delFlag},#{type},#{createTime},#{updateTime})
+		]]>
+	</insert>
+	<select id="getById" parameterType="long" resultMap="user">
+		<![CDATA[
+			SELECT * FROM T_USER WHERE ID=#{id}
+			]]>
+	</select>
+	<select id="getByIdNo" parameterType="string" resultMap="user">
+		<![CDATA[
+			SELECT * FROM T_USER WHERE IDNO=#{idNo}
+			]]>
+	</select>
+	
+	<update id="updateUser" parameterType="com.hefei.user.info.po.User">
+			UPDATE T_USER 
+			<set>
+				<if test="name != null and name != ''">
+					NAME = #{name},
+				</if>
+				<if test="idNo != null and idNo != ''">
+					IDNO = #{idNo},
+				</if>
+				<if test="sex != null and sex != ''">
+					SEX = #{sex},
+				</if>
+				<if test="birthday != null">
+					BIRTHDAY = #{birthday},
+				</if>
+				<if test="hukouType != null and hukouType != ''">
+					HUKOU_TYPE = #{hukouType},
+				</if>
+				<if test="hukouProvinceCode != null and hukouProvinceCode != ''">
+					HUKOU_PROVINCE_CODE = #{hukouProvinceCode},
+				</if>
+				<if test="hukouCityCode != null and hukouCityCode != ''">
+					HUKOU_CITY_CODE = #{hukouCityCode},
+				</if>
+				<if test="hukouAreaCode != null and hukouAreaCode != ''">
+					HUKOU_AREA_CODE = #{hukouAreaCode},
+				</if>
+				<if test="liveProvinceCode != null and liveProvinceCode != ''">
+					LIVE_PROVINCE_CODE = #{liveProvinceCode},
+				</if>
+				<if test="liveCityCode != null and liveCityCode != ''">
+					LIVE_CITY_CODE = #{liveCityCode},
+				</if>
+				<if test="liveAreaCode != null and liveAreaCode != ''">
+					LIVE_AREA_CODE = #{liveAreaCode},
+				</if>
+				<if test="liveAddress != null and liveAddress != ''">
+					LIVE_ADDRESS = #{liveAddress},
+				</if>
+				<if test="updateTime != null">
+					UPDATE_TIME = #{updateTime},
+				</if>
+			</set>
+			WHERE ID = #{id}
+	</update>
+</mapper>
+

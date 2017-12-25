@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        ">
+
+	<!-- 采用注释的方式配置bean -->
+	<context:annotation-config />
+	<context:component-scan base-package="com.hefei.user">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<!-- 加载 jdbc.properties 配置文件 -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:jdbc.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+		<property name="username" value="${jdbc.rmsdb-master.username}"></property>
+		<property name="password" value="${jdbc.rmsdb-master.password}"></property>
+		<property name="url" value="${jdbc.rmsdb-master.url}"></property>
+		<property name="initialSize" value="${jdbc.rmsdb-master.initialSize}"></property>
+		<property name="maxActive" value="${jdbc.rmsdb-master.maxActive}"></property>
+		<property name="maxIdle" value="${jdbc.rmsdb-master.maxIdle}"></property>
+		<property name="minIdle" value="${jdbc.rmsdb-master.minIdle}"></property>
+		<property name="maxWait" value="${jdbc.rmsdb-master.maxWait}"></property>
+		<property name="validationQuery" value="${jdbc.rmsdb-master.validationQuery}"/>  
+	</bean>
+
+
+	<bean id="sqlSessionFactory"
+          class="org.mybatis.spring.SqlSessionFactoryBean"
+          p:dataSource-ref="dataSource"
+          p:configLocation="classpath:mybatis.xml"
+          p:mapperLocations="classpath:mapper/*.xml"/><!-- configLocation为mybatis属性 mapperLocations为所有mapper-->
+	<!-- spring与mybatis整合配置，扫描所有dao -->
+	 <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer"
+	        p:basePackage="com.hefei.user.**.mapper"
+	        p:markerInterface="com.hefei.service.framework.base.mapper.Mapper"
+	        p:sqlSessionFactoryBeanName="sqlSessionFactory"/>
+	        
+	<!-- 配置数据库注解aop -->
+	<bean id="transactionManager"
+	        class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+	        p:dataSource-ref="dataSource"/>
+	        
+	<tx:annotation-driven />
+	  
+	 <!--配置事务的传播特性 -->  
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">  
+        <tx:attributes>  
+            <tx:method name="create*" propagation="REQUIRED" rollback-for="com.hefei.service.framework.exception.ServiceException" />  
+            <tx:method name="save*" propagation="REQUIRED" rollback-for="com.hefei.service.framework.exception.ServiceException" />  
+            <tx:method name="update*" propagation="REQUIRED" rollback-for="com.hefei.service.framework.exception.ServiceException" />  
+            <tx:method name="remove*" propagation="REQUIRED" rollback-for="com.hefei.service.framework.exception.ServiceException" />  
+            <tx:method name="get*" propagation="SUPPORTS" read-only="true" />
+            <tx:method name="load*" propagation="SUPPORTS" read-only="true" />
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true" />  
+        </tx:attributes>  
+    </tx:advice>
+    <!--那些类的哪些方法参与事务 -->  
+   <aop:config>  
+        <aop:advisor  
+            pointcut="execution(* com.hefei.user..service.*.*(..))" 
+            advice-ref="txAdvice" />  
+    </aop:config>
+</beans>

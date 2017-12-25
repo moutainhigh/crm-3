@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.agg.location.mapper.LocationMapper">
+	<resultMap type="com.hefei.agg.location.po.Location" id="location">
+		<result column="CODE" property="code" />
+		<result column="NAME" property="name" />
+		<result column="EN_NAME" property="enName" />
+		<result column="RANK" property="rank" />
+		<result column="LEVEL_CODE" property="levelCode" />
+		<result column="PARENT_CODE" property="parentCode" />
+		<result column="STATUS" property="status" />
+		<result column="POST_CODE" property="postCode" />
+		<result column="DIALING_CODE" property="dialingCode" />
+		<result column="REMARK" property="remark" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<select id="getAllAddressList" resultMap="location">
+		<![CDATA[
+			SELECT * FROM T_LOCATION
+		]]>
+	</select>
+	
+	<select id="getAllProvinceList" resultMap="location">
+		<![CDATA[
+			SELECT * FROM T_LOCATION WHERE RANK = 2
+		]]>
+	</select>
+	
+	<select id="getCityListByCode" resultMap="location" parameterType="String">
+		<![CDATA[
+			SELECT * FROM T_LOCATION WHERE RANK = 3 AND PARENT_CODE = #{provinceCode};
+		]]>
+	</select>
+	
+	<select id="getAreasListByCode" resultMap="location" parameterType="String">
+		<![CDATA[
+			SELECT * FROM T_LOCATION WHERE RANK = 4 AND PARENT_CODE = #{cityCode};
+		]]>
+	</select>
+
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.rms.physical.mapper.PhysicalMapper">
+	<resultMap type="com.hefei.rms.physical.po.PhysicalInfo" id="physical">
+		<id column="ID" property="id" />
+		<result column="COMPANY_ID" property="companyId" />
+		<result column="EMPLOYEE_ID" property="employeeId" />
+		<result column="SEX" property="sex" />
+		<result column="HIGHT" property="hight" />
+		<result column="WEIGHT" property="weight" />
+		<result column="VISION_LEFT" property="visionLeft" />
+		<result column="VISION_RIGHT" property="visionRight" />
+		<result column="COLOUR_BLIND" property="colourBlind" />
+		<result column="PULSE" property="pulse" />
+		<result column="BLOOD_PRE" property="bloodPre" />
+		<result column="HEART_LUNG" property="heartLung" />
+		<result column="LIVER_KIDNEY" property="liverKidney" />
+		<result column="DOPPLER" property="doppler" />
+		<result column="ECG" property="ecg" />
+		<result column="DIEASE_HISTORY" property="dieaseHistory" />
+		<result column="CREATOR" property="creator" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<select id="findPhysical" resultMap="physical" parameterType="Long">
+		<![CDATA[
+			SELECT * FROM T_EMPLOYEE_PHYSICAL WHERE EMPLOYEE_ID = #{employeeId}
+		]]>
+	</select>
+	
+	<insert id="savePhysical" parameterType="com.hefei.rms.physical.po.PhysicalInfo">   
+		<![CDATA[
+			INSERT INTO T_EMPLOYEE_PHYSICAL(ID,COMPANY_ID,EMPLOYEE_ID,SEX,HEIGHT,WEIGHT,VISION_LEFT,VISION_RIGHT,COLOUR_BLIND,
+			PULSE,BLOOD_PRE,HEART_LUNG,LIVER_KIDNEY,DOPPLER,ECG,DIEASE_HISTORY,CREATOR,CREATE_TIME,UPDATE_TIME)  VALUES 
+			(#{id},#{companyId},#{employeeId},#{sex},#{height},#{weight},#{visionLeft},#{visionRight},#{colourBlind},#{pulse},
+			#{bloodPre},#{heartLung},#{liverKidney},#{doppler},#{ecg},#{dieaseHistory},#{creator},#{createTime},#{updateTime})
+		]]>
+	</insert>
+	
+	<update id="updatePhysical" parameterType="com.hefei.rms.physical.po.PhysicalInfo">
+			UPDATE T_EMPLOYEE_PHYSICAL
+			<set>
+				<if test="hight != null">
+					HEIGHT = #{height},
+				</if>
+				<if test="weight != null">
+					WEIGHT = #{weight},
+				</if>
+				<if test="visionLeft != null">
+					VISION_LEFT = #{visionLeft},
+				</if>
+				<if test="visionRight != null">
+					VISION_RIGHT = #{visionRight},
+				</if>
+				
+			</set>
+			WHERE ID = #{id}
+			
+	</update>
+
+</mapper>

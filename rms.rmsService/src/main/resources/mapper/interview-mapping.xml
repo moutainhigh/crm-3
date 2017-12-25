@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.rms.interview.mapper.InterviewMapper">
+	<resultMap type="com.hefei.rms.interview.po.InterviewInfo" id="interview">
+		<id column="ID" property="id" />
+		<result column="COMPANY_ID" property="companyId" />
+		<result column="EMPLOYEE_ID" property="employeeId" />
+		<result column="POSITION_ID" property="positionId" />
+		<result column="NAME" property="name" />
+		<result column="PHONE" property="phone" />
+		<result column="EMAIL" property="email" />
+		<result column="ADDRESS" property="address" />
+		<result column="INTERVIEW_YUYUE_TIME" property="interviewYuyueTime" />
+		<result column="INTERVIEW_ACTUAL_TIME" property="interviewActualTime" />
+		<result column="USER_ID" property="userId" />
+		<result column="INTERVIEW_STATUS" property="interviewStatus" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<insert id="saveInterviewInfo" parameterType="com.hefei.rms.interview.po.InterviewInfo">   
+		<![CDATA[
+			INSERT INTO T_EMPLOYEE_INTERVIEW(ID,COMPANY_ID,EMPLOYEE_ID,POSITION_ID,NAME,PHONE,EMAIL,ADDRESS,INTERVIEW_YUYUE_TIME,INTERVIEW_ACTUAL_TIME,USER_ID,INTERVIEW_STATUS,
+			DEL_FLAG,CREATE_TIME,UPDATE_TIME)  VALUES 
+			(#{id},#{companyId},#{employeeId},#{positionId},#{name},#{phone},#{email},#{address},#{interviewYuyueTime},#{interviewActualTime},
+			#{userId},#{interviewStatus},#{delFlag},#{createTime},#{updateTime})
+		]]>
+	</insert>
+	<update id="updateInterview" parameterType="Map">
+		<![CDATA[
+			UPDATE T_EMPLOYEE_INTERVIEW SET INTERVIEW_STATUS = #{interviewStatus} WHERE ID = #{id}
+		]]>
+	</update>
+	<select id="findInterview" resultMap="interview">
+		SELECT * FROM T_EMPLOYEE_INTERVIEW WHERE ID = #{0} AND INTERVIEW_STATUS = #{1}
+	</select>
+</mapper>

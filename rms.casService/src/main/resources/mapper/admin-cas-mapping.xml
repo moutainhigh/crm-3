@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.cas.admin.cas.mapper.AdminCasMapper">
+
+	 <resultMap type="com.hefei.cas.admin.po.Admin" id="admin">
+		<id column="ID" property="id" />
+		<result column="USERNAME" property="username" />
+		<result column="PASSWORD" property="password" />
+		<result column="PWD_VERSION" property="pwdVersion" />
+		<result column="REAL_NAME" property="realName" />
+		<result column="MOBILE_NO" property="mobileNo" />
+		<result column="EMAIL" property="email" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATOR" property="creator" />
+		<result column="UPDATER" property="updater" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	<select id="getModuleMenus" parameterType="Map" resultMap="com.hefei.cas.module.mapper.ModuleMapper.module">    
+        <![CDATA[
+        SELECT M.* FROM T_CAS_MODULE M, T_CAS_ROLE_MODULE RM, T_CAS_ROLE R, T_CAS_ADMIN_ROLE AR
+		WHERE AR.ADMIN_ID=#{adminId} AND AR.ROLE_ID=R.ID AND RM.ROLE_ID=R.ID AND RM.MODULE_ID=M.ID AND M.SYSTEM_ID=#{systemId} AND M.TYPE=#{moduleType}
+        ]]>
+	</select>
+</mapper>

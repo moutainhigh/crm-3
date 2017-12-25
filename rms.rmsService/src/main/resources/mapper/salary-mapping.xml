@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.rms.salary.mapper.SalaryMapper">
+	<resultMap type="com.hefei.rms.salary.po.Salary" id="salary">
+		<id column="ID" property="id" />
+		<result column="EMPLOYEE_ID" property="employeeId" />
+		<result column="COMPANY_ID" property="companyId" />
+		<result column="EMPLOYEE_NAME" property="employeeName" />
+		<result column="MONTHLY_BASE_SALARY" property="monthlyBaseSalary" />
+		<result column="MONTHLY_BONUS" property="monthlyBonus" />
+		<result column="QUARTERLY_BONUS" property="quarterlyBonus" />
+		<result column="YEARLY_BONUS" property="yearlyBonus" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<select id="getSalary" resultMap="salary" parameterType="map">
+		<![CDATA[
+			SELECT * FROM T_EMPLOYEE_SALARY WHERE EMPLOYEE_ID = #{employeeId} AND COMPANY_ID = #{companyId}
+		]]>
+	</select>
+	
+	<insert id="saveSalary" parameterType="com.hefei.rms.salary.po.Salary">   
+		<![CDATA[
+			INSERT INTO T_EMPLOYEE_SALARY(ID,COMPANY_ID,EMPLOYEE_ID,EMPLOYEE_NAME,MONTHLY_BASE_SALARY,MONTHLY_BONUS,QUARTERLY_BONUS,YEARLY_BONUS,DEL_FLAG,CREATE_TIME,UPDATE_TIME)  VALUES 
+			(#{id},#{companyId},#{employeeId},#{employeeName},#{monthlyBaseSalary},#{monthlyBonus},#{quarterlyBonus},#{yearlyBonus},#{delFlag},#{createTime},#{updateTime})
+		]]>
+	</insert>
+
+	<update id="updateSalary" parameterType="com.hefei.rms.salary.po.Salary">
+		UPDATE T_EMPLOYEE_SALARY
+		<set>
+			<if test="monthlyBaseSalary != null">
+				MONTHLY_BASE_SALARY = #{monthlyBaseSalary},
+			</if>
+			<if test="monthlyBonus != null">
+				MONTHLY_BONUS = #{monthlyBonus},
+			</if>
+			<if test="quarterlyBonus != null">
+				QUARTERLY_BONUS = #{quarterlyBonus},
+			</if>
+			<if test="yearlyBonus != null">
+				YEARLY_BONUS = #{yearlyBonus},
+			</if>
+			<if test="delFlag != null and delFlag !=''">
+				DEL_FLAG = #{delFlag},
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME = #{updateTime},
+			</if>
+		</set>
+		WHERE ID = #{id}
+	</update>
+	
+	<select id="findSalaryPaginationItems" resultType="com.hefei.api.rms.salary.dto.SalarySSDTO" parameterType="map">
+		SELECT S.ID AS id, S.EMPLOYEE_ID AS employeeId,  S.COMPANY_ID AS companyId, S.EMPLOYEE_NAME AS employeeName
+		, S.MONTHLY_BASE_SALARY AS monthlyBaseSalary, S.MONTHLY_BONUS AS monthlyBonus,S.QUARTERLY_BONUS AS quarterlyBonus,S.YEARLY_BONUS AS yearlyBonus
+		,SS.SS_BASE_SALARY AS ssBaseSalary, SS.SS_CARD AS ssCard
+		, SS.YLAO_INSURANCE AS ylaoInsurance, SS.YLAO_COM_RATE AS ylaoComRate, SS.YLAO_COM_CASH AS ylaoComCash,SS.YLAO_PERSONAL_RATE AS ylaoPersonalRate,SS.YLAO_PERSONAL_CASH AS ylaoPersonalCash
+		,SS.SYE_INSURANCE AS syeInsurance,SS.SYE_COM_RATE AS syeComRate,SS.SYE_COM_CASH AS syeComCash,SS.SYE_PERSONAL_RATE  AS syePersonalRate,SS.SYE_PERSONAL_CASH  AS syePersonalCash
+		,SS.GSH_INSURANCE AS gshInsurance,SS.GSH_COM_RATE AS gshComRate,SS.GSH_COM_CASH AS gshComCash,SS.GSH_PERSONAL_RATE  AS gshPersonalRate,SS.GSH_PERSONAL_CASH  AS gshPersonalCash
+		,SS.SYU_INSURANCE AS syuInsurance,SS.SYU_COM_RATE AS syuComRate,SS.SYU_COM_CASH AS syuComCash,SS.SYU_PERSONAL_RATE  AS syuPersonalRate,SS.SYU_PERSONAL_CASH  AS syuPersonalCash
+		,SS.YLIAO_INSURANCE  AS yliaoInsurance,SS.YLIAO_COM_RATE AS yliaoComRate,SS.YLIAO_COM_CASH AS yliaoComCash,SS.YLIAO_PERSONAL_RATE AS yliaoPersonalRate,SS.YLIAO_PERSONAL_CASH AS yliaoPersonalCash
+		,SS.GJJ_INSURANCE AS gjjInsurance,SS.GJJ_COM_RATE AS gjjComRate,SS.GJJ_COM_CASH AS gjjComCash,SS.GJJ_PERSONAL_RATE  AS gjjPersonalRate,SS.GJJ_PERSONAL_CASH  AS gjjPersonalCash
+		,SS.GJJ_ADD AS gjjAdd
+		FROM T_EMPLOYEE_SALARY S,T_EMPLOYEE_SS SS, T_EMPLOYEE_COMPANY C
+		WHERE SS.EMPLOYEE_ID=S.EMPLOYEE_ID AND S.EMPLOYEE_ID=C.EMPLOYEE_ID 
+		<if test="companyId != null and companyId !=''">
+			AND S.COMPANY_ID=#{companyId}
+			AND SS.COMPANY_ID=#{companyId}
+		</if>
+		<if test="cardNo != null and cardNo !=''">
+			AND C.CARD_NO=#{cardNo}
+		</if>
+		<if test="employeeName != null and employeeName !=''">
+			AND S.EMPLOYEE_NAME=#{employeeName}
+		</if>
+		<if test="employeeCompanyStatus != null and employeeCompanyStatus.size() > 0">
+			AND 
+		  	<foreach collection="employeeCompanyStatus" item="statusItem" index="index" open="(" close=")" separator=" OR ">
+		      C.STATUS = #{statusItem}
+	      	</foreach>
+	     </if>
+			ORDER BY S.CREATE_TIME DESC
+			LIMIT #{startIndex},#{pageSize}
+	</select>
+	
+	<select id="findSalaryPaginationCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT  COUNT(0)
+		FROM T_EMPLOYEE_SALARY S,T_EMPLOYEE_SS SS, T_EMPLOYEE_COMPANY C
+		WHERE SS.EMPLOYEE_ID=S.EMPLOYEE_ID AND S.EMPLOYEE_ID=C.EMPLOYEE_ID 
+		<if test="companyId != null and companyId !=''">
+			AND S.COMPANY_ID=#{companyId}
+			AND SS.COMPANY_ID=#{companyId}
+		</if>
+		<if test="cardNo != null and cardNo !=''">
+			AND C.CARD_NO=#{cardNo}
+		</if>
+		<if test="employeeName != null and employeeName !=''">
+			AND S.EMPLOYEE_NAME=#{employeeName}
+		</if>
+		<if test="employeeCompanyStatus != null and employeeCompanyStatus.size() > 0">
+			AND 
+		  	<foreach collection="employeeCompanyStatus" item="statusItem" index="index" open="(" close=")" separator=" OR ">
+		      C.STATUS = #{statusItem}
+	      	</foreach>
+	     </if>
+	</select>
+	
+</mapper>

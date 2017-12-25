@@ -1,0 +1,49 @@
+@charset "UTF-8";
+
+ul,ol,li{list-style:none;}
+.clearfix:after{content:""; display:block; visibility:hidden; height:0; clear:both;}
+.clearfix{zoom:1;}
+
+.uploadFile li{float:left;width:82px;height:82px;background:url(../img/imgBg.png) 0px 0px no-repeat;margin-right:20px;cursor:pointer;position:relative;}
+.uploadFile li.uploadAfter{border: 1px solid rgb(176, 207, 238);padding: 1px;z-index:10;width: 78px;height: 78px;background:none;}
+.uploadFile li.uploadAfter span{position: absolute;height: 15px;width: 15px;background: url(../img/delete.png) no-repeat;right: 1px;top: 1px;overflow:hidden;z-index:20;}
+.uploadImg { margin-top:10px;}
+
+.fileinput-button {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+.fileinput-button span {
+  display: inline-block;
+  cursor:pointer;
+   line-height: 1;
+   padding: 7px 10px;
+   text-decoration: none;
+   font-weight: bold;
+   color: #fff;
+   background-color: #39c;
+   -moz-border-radius: 5px;
+   -webkit-border-radius: 5px;
+   -khtml-border-radius: 5px;
+   border-radius: 5px;
+}
+.fileinput-button input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  opacity: 0;
+  -ms-filter: 'alpha(opacity=0)';
+  font-size: 200px !important;
+  direction: ltr;
+  cursor: pointer;
+}
+/* Fixes for IE < 8 */
+@media screen\9 {
+  .fileinput-button input {
+    filter: alpha(opacity=0);
+    font-size: 100%;
+    height: 100%;
+  }
+}

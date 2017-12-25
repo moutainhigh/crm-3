@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.rms.company.mapper.CompanyMapper">
+    <resultMap type="com.hefei.rms.company.po.Company" id="companyInfo">
+		<id column="ID" property="id" />
+		<result column="COMPANY_NAME" property="companyName" />
+		<result column="COMPANY_ADDRESS" property="companyAddress" />
+		<result column="COMPANY_TEL" property="companyTel" />
+		<result column="COMPANY_INFO" property="companyInfo" />
+		<result column="LEGAL_PERSON" property="legalPerson" />
+		<result column="BUSINESS_LICENSE_PIC" property="businessLicensePic" />
+		<result column="USCC_CODE" property="usccCode" />
+		<result column="ORG_CODE" property="orgCode" />
+		<result column="TAX_CODE" property="taxCode" />
+		<result column="LICENSE_CODE" property="licenseCode" />
+		<result column="TAX_TYPE" property="taxType" />
+		<result column="ACCOUNT_STANDARD" property="accountStandard" />
+		<result column="COMPANY_SIZE" property="companySize" />
+		<result column="COMPANY_TYPE" property="companyType" />
+		<result column="PROVINCE_CODE" property="provinceCode" />
+		<result column="CITY_CODE" property="cityCode" />
+		<result column="COUNTY_CODE" property="countyCode" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<resultMap type="com.hefei.rms.company.po.CompanyIndustry" id="companyIndustry">
+		<id column="ID" property="id" />
+		<result column="COMPANY_ID" property="companyId" />
+		<result column="INDUSTRY_ID" property="industryId" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<insert id="saveCompany" parameterType="com.hefei.rms.company.po.Company">
+         insert into T_COMPANY (ID,COMPANY_NAME,COMPANY_ADDRESS,COMPANY_TEL,COMPANY_INFO,LEGAL_PERSON,BUSINESS_LICENSE_PIC,USCC_CODE,ORG_CODE,TAX_CODE,LICENSE_CODE
+         ,TAX_TYPE,ACCOUNT_STANDARD,COMPANY_SIZE,COMPANY_TYPE,PROVINCE_CODE,CITY_CODE,COUNTY_CODE,DEL_FLAG,CREATE_TIME,UPDATE_TIME) 
+         VALUES(#{id},#{companyName},#{companyAddress},#{companyTel},#{companyInfo},#{legalPerson},#{businessLicensePic},#{usccCode},#{orgCode},#{taxCode},#{licenseCode},
+         #{taxType},#{accountStandard},#{companySize},#{companyType},#{provinceCode},#{cityCode},#{countyCode},#{delFlag},#{createTime},#{updateTime}) 
+    </insert>
+    <update id="updateCompany" parameterType="com.hefei.rms.company.po.Company">
+		UPDATE T_COMPANY SET 
+		COMPANY_NAME=#{companyName},
+		COMPANY_ADDRESS=#{companyAddress},
+		COMPANY_TEL=#{companyTel},
+		COMPANY_INFO=#{companyInfo},
+		LEGAL_PERSON=#{legalPerson},
+		BUSINESS_LICENSE_PIC=#{businessLicensePic},
+		USCC_CODE=#{usccCode},
+		ORG_CODE=#{orgCode},
+		TAX_CODE=#{taxCode},
+		LICENSE_CODE=#{licenseCode},
+		TAX_TYPE=#{taxType},
+		ACCOUNT_STANDARD=#{accountStandard},
+		COMPANY_SIZE=#{companySize},
+		COMPANY_TYPE=#{companyType},
+		PROVINCE_CODE=#{provinceCode},
+		CITY_CODE=#{cityCode},
+		COUNTY_CODE=#{countyCode},
+		UPDATE_TIME=#{updateTime}
+		WHERE ID=#{id}
+	</update>
+	
+ 	<insert id="saveCompanyIndustry" parameterType="com.hefei.rms.company.po.CompanyIndustry">
+         insert into T_COMPANY_INDUSTRY (ID,COMPANY_ID,INDUSTRY_ID,DEL_FLAG,CREATE_TIME,UPDATE_TIME) 
+         VALUES(#{id},#{companyId},#{industryId},#{delFlag},#{createTime},#{updateTime}) 
+    </insert>
+    <update id="removeCompanyIndustry" parameterType="map">
+		UPDATE T_COMPANY_INDUSTRY SET DEL_FLAG=#{delFlag}, UPDATE_TIME=#{updateTime}
+		WHERE COMPANY_ID = #{companyId} AND 
+		<foreach collection="industryIds" item="item" index="index" open="(" close=")" separator=" OR ">
+	     INDUSTRY_ID = #{item}
+      	</foreach> 
+	</update>
+	
+	<select id="getCompany" parameterType="long" resultMap="companyInfo">
+			SELECT * FROM T_COMPANY WHERE ID = #{id}
+	</select>
+	<select id="getCompanyByIdAndUser" parameterType="map" resultMap="companyInfo">
+		SELECT C.* FROM T_COMPANY C, T_EMPLOYEE_COMPANY EC, T_USER_EMPLOYEE UE 
+		WHERE UE.USER_ID=#{userId}  AND UE.EMPLOYEE_ID=EC.EMPLOYEE_ID AND EC.COMPANY_ID=${companyId} AND C.ID=#{companyId}
+	</select>
+	
+	<select id="getCompanyByName" parameterType="string" resultMap="companyInfo">
+			SELECT * FROM T_COMPANY WHERE COMPANY_NAME = #{companyName}
+	</select>
+	<select id="getCompanyIndustry" parameterType="map" resultMap="companyIndustry">
+			SELECT * FROM T_COMPANY_INDUSTRY WHERE COMPANY_ID = #{companyId} AND DEL_FLAG=#{delFlag}
+	</select>
+	<select id="getCompanyByUserId" parameterType="map" resultMap="companyInfo">
+	SELECT C.* FROM T_COMPANY C, T_EMPLOYEE_company EC, T_USER_EMPLOYEE UE
+	WHERE UE.USER_ID=#{userId} AND UE.DEL_FLAG=#{userCompanyDelFlag} AND C.DEL_FLAG=#{companyDelFlag}
+	AND
+	 <foreach collection="employeeCompanyStatus" item="ecstatus" index="index" open="(" close=")" separator=" OR ">
+           EC.STATUS = #{ecstatus}
+       </foreach> 
+	 AND UE.EMPLOYEE_ID=EC.EMPLOYEE_ID  AND  C.ID=EC.COMPANY_ID  
+	</select>
+	<select id="getCompanyByEmployeeId" parameterType="map" resultMap="companyInfo">
+			SELECT C.* FROM T_COMPANY C, T_EMPLOYEE_COMPANY EC WHERE EC.EMPLOYEE_ID=#{employeeId} AND C.ID=EC.COMPANY_ID  AND C.DEL_FLAG=#{companyDelFlag}
+			AND
+		 <foreach collection="employeeCompanyStatus" item="ecstatus" index="index" open="(" close=")" separator=" OR ">
+            EC.STATUS = #{ecstatus}
+        </foreach>
+	</select>
+	
+	<select id="getManagedPaginationItems" parameterType="map" resultMap="companyInfo">
+			SELECT C.* FROM T_COMPANY C, T_EMPLOYEE_company EC, T_USER_EMPLOYEE UE
+			WHERE 1=1
+			<if test="delFlag != null and delFlag !=''">
+				 AND C.DEL_FLAG=#{companyDelFlag}
+			</if>
+			<if test="companyName != null and companyName !=''">
+				 AND C.COMPANY_NAME   CONCAT('%',#{companyName},'%')
+			</if>
+			AND UE.USER_ID=#{userId} AND UE.DEL_FLAG=#{userCompanyDelFlag}
+			AND
+			<foreach collection="employeeCompanyStatus" item="ecstatus" index="index" open="(" close=")" separator=" OR ">
+		           EC.STATUS = #{ecstatus}
+	      	</foreach> 
+		 AND UE.EMPLOYEE_ID=EC.EMPLOYEE_ID  AND  C.ID=EC.COMPANY_ID  
+		 ORDER BY C.CREATE_TIME
+		 LIMIT #{startIndex},#{pageSize}
+	</select>
+	<select id="getManagedPaginationCount" parameterType="map" resultType="integer">
+			SELECT count(0) FROM T_COMPANY C, T_EMPLOYEE_company EC, T_USER_EMPLOYEE UE
+			WHERE 1=1
+			<if test="delFlag != null and delFlag !=''">
+				 AND C.DEL_FLAG=#{companyDelFlag}
+			</if>
+			<if test="companyName != null and companyName !=''">
+				 AND C.COMPANY_NAME   CONCAT('%',#{companyName},'%')
+			</if>
+			AND UE.USER_ID=#{userId} AND UE.DEL_FLAG=#{userCompanyDelFlag}
+			AND
+			 <foreach collection="employeeCompanyStatus" item="ecstatus" index="index" open="(" close=")" separator=" OR ">
+		           EC.STATUS = #{ecstatus}
+	       </foreach> 
+		 AND UE.EMPLOYEE_ID=EC.EMPLOYEE_ID  AND  C.ID=EC.COMPANY_ID  
+	</select>
+	
+</mapper>

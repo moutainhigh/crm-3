@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee   http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+	<display-name>item</display-name>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+            classpath:applicationContext.xml
+		</param-value>
+	</context-param>
+	  <listener>
+	    <listener-class>
+	            org.springframework.web.context.ContextLoaderListener
+	        </listener-class>
+	  </listener>
+	
+	<listener>  
+       <listener-class>com.hefei.manager.common.listener.InitListener</listener-class>  
+    </listener>
+	
+	<!-- spring mvc filter start -->  
+    <servlet>
+        <servlet-name>spring</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class> 
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:spring-mvc.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup><!-- load-on-startup必须放在最后 -->
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>spring</servlet-name>
+        <url-pattern>*.do</url-pattern>
+    </servlet-mapping>
+    <!-- spring mvc filter end --> 
+	
+	
+	<!--CharacterFilter start-->
+	<filter>
+		<filter-name>CharacterFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>CharacterFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+		<filter-name>RequestLoggerFilter</filter-name>
+		<filter-class>com.hefei.frontend.framework.http.filter.RequestLoggerFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>RequestLoggerFilter</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+		<filter-name>XSSFilter</filter-name>
+		<filter-class>com.hefei.frontend.framework.http.filter.XSSFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>XSSFilter</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+		<filter-name>LoginFilter</filter-name>
+		<filter-class>com.hefei.frontend.framework.http.filter.LoginFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>LoginFilter</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+		<filter-name>casFilter</filter-name>
+		<filter-class>com.hefei.frontend.framework.http.filter.CasFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>casFilter</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>
+	
+    <error-page> 
+        <error-code>404</error-code> 
+        <location>/jsp/common/error.jsp</location> 
+    </error-page> 
+
+    <welcome-file-list>
+      <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>  
+  
+</web-app>

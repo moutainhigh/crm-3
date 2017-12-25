@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.rms.salary.mapper.SalaryTransactionMapper">
+	<resultMap type="com.hefei.rms.salary.po.SalaryTransaction" id="salaryTransaction">
+		<id column="ID" property="id" />
+		<result column="EMPLOYEE_ID" property="employeeId" />
+		<result column="COMPANY_ID" property="companyId" />
+		<result column="EMPLOYEE_NAME" property="employeeName" />
+		<result column="MONTHLY_BASE_SALARY" property="monthlyBaseSalary" />
+		<result column="MONTHLY_BONUS" property="monthlyBonus" />
+		<result column="QUARTERLY_BONUS" property="quarterlyBonus" />
+		<result column="YEARLY_BONUS" property="yearlyBonus" />
+		<result column="DEDUCT_AMOUNT" property="deductAmount" />
+		<result column="SS_ID" property="ssId" />
+		<result column="SS_AMOUNT" property="ssAmount" />
+		<result column="TAX_RATE" property="taxRate" />
+		<result column="TAX_AMOUNT" property="taxAmount" />
+		<result column="PAYED_AMOUNT" property="payedAmount" />
+		<result column="PAYED_TIME" property="payedTime" />
+		<result column="STATUS" property="status" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+
+	<select id="getSalaryTransaction" resultMap="salaryTransaction" parameterType="long">
+		<![CDATA[
+			SELECT * FROM T_SALARY_TRANSACTION WHERE ID = #{id} 
+		]]>
+	</select>
+	
+	<insert id="saveSalaryTransaction" parameterType="com.hefei.rms.salary.po.SalaryTransaction">   
+		<![CDATA[
+			INSERT INTO T_SALARY_TRANSACTION(ID,COMPANY_ID,EMPLOYEE_ID,EMPLOYEE_NAME,MONTHLY_BASE_SALARY,MONTHLY_BONUS,QUARTERLY_BONUS,YEARLY_BONUS,DEL_FLAG
+			,CREATE_TIME,UPDATE_TIME,DEDUCT_AMOUNT,SS_ID,SS_AMOUNT,TAX_RATE,TAX_AMOUNT,PAYED_AMOUNT,PAYED_TIME,STATUS)
+			  VALUES  (#{id},#{companyId},#{employeeId},#{employeeName},#{monthlyBaseSalary},#{monthlyBonus},#{quarterlyBonus},#{yearlyBonus},#{delFlag},#{createTime},#{updateTime}
+			  ,#{deductAmount},#{ssId},#{ssAmount},#{taxRate},#{taxAmount},#{payedAmount},#{payedTime},#{status})
+		]]>
+	</insert>
+	<insert id="saveSalaryTransactions" parameterType="java.util.List"> 
+	     INSERT INTO T_SALARY_TRANSACTION(ID,COMPANY_ID,EMPLOYEE_ID,EMPLOYEE_NAME,MONTHLY_BASE_SALARY,MONTHLY_BONUS,QUARTERLY_BONUS,YEARLY_BONUS,DEL_FLAG,CREATE_TIME,UPDATE_TIME
+			,DEDUCT_AMOUNT,SS_ID,SS_AMOUNT,TAX_RATE,TAX_AMOUNT,PAYED_AMOUNT,PAYED_TIME,STATUS)
+			 VALUES
+	           <foreach collection="list" item="item" index="index" separator="," >
+	           (#{item.id},#{item.companyId},#{item.employeeId},#{item.employeeName},#{item.monthlyBaseSalary},#{item.monthlyBonus}
+	           ,#{item.quarterlyBonus},#{item.yearlyBonus},#{item.delFlag},#{item.createTime},#{item.updateTime},#{item.deductAmount}
+	           ,#{item.ssId},#{item.ssAmount},#{item.taxRate},#{item.taxAmount},#{item.payedAmount},#{item.payedTime},#{item.status})
+	           </foreach>
+	</insert>
+	  
+	<update id="updateSalaryTransactionPayed" parameterType="map">
+		UPDATE T_SALARY_TRANSACTION SET STATUS=#{status}, PAYED_TIME=#{payedTime}, UPDATE_TIME=#{updateTime}
+		WHERE
+		<foreach collection="transactionIds" item="item" index="index" open="(" close=")" separator=" OR ">
+	      ID = #{item}
+      	</foreach> 
+	</update>
+			
+	<update id="updateSalaryTransaction" parameterType="map">
+		UPDATE T_SALARY_TRANSACTION SET MONTHLY_BASE_SALARY=#{monthlyBaseSalary}, MONTHLY_BONUS=#{monthlyBonus}, QUARTERLY_BONUS=#{quarterlyBonus}, YEARLY_BONUS=#{yearlyBonus}
+		, DEDUCT_AMOUNT=#{deductAmount}, TAX_RATE=#{taxRate}, TAX_AMOUNT=#{taxAmount}, PAYED_AMOUNT=#{payedAmount}, UPDATE_TIME=#{updateTime}
+		WHERE ID = #{id}
+	</update>
+			
+	<select id="getSalaryPayTransactionPaginationItems" resultType="com.hefei.api.rms.salary.dto.SalaryPayTransactionDTO" parameterType="map">
+		SELECT S.ID AS id, S.EMPLOYEE_ID AS employeeId,  S.COMPANY_ID AS companyId, S.EMPLOYEE_NAME AS employeeName
+		, S.MONTHLY_BASE_SALARY AS monthlyBaseSalary, S.MONTHLY_BONUS AS monthlyBonus,S.QUARTERLY_BONUS AS quarterlyBonus,S.YEARLY_BONUS AS yearlyBonus
+		,S.DEDUCT_AMOUNT AS deductAmount,S.SS_ID AS ssId,S.SS_AMOUNT AS ssAmount,S.TAX_RATE AS taxRate,S.TAX_AMOUNT AS taxAmount
+		,S.PAYED_AMOUNT AS payedAmount,S.PAYED_TIME AS payedTime,S.STATUS AS status
+		,SS.SS_BASE_SALARY AS ssBaseSalary, SS.SS_CARD AS ssCard
+		, SS.YLAO_INSURANCE AS ylaoInsurance, SS.YLAO_COM_RATE AS ylaoComRate, SS.YLAO_COM_CASH AS ylaoComCash,SS.YLAO_PERSONAL_RATE AS ylaoPersonalRate,SS.YLAO_PERSONAL_CASH AS ylaoPersonalCash
+		,SS.SYE_INSURANCE AS syeInsurance,SS.SYE_COM_RATE AS syeComRate,SS.SYE_COM_CASH AS syeComCash,SS.SYE_PERSONAL_RATE  AS syePersonalRate,SS.SYE_PERSONAL_CASH  AS syePersonalCash
+		,SS.GSH_INSURANCE AS gshInsurance,SS.GSH_COM_RATE AS gshComRate,SS.GSH_COM_CASH AS gshComCash,SS.GSH_PERSONAL_RATE  AS gshPersonalRate,SS.GSH_PERSONAL_CASH  AS gshPersonalCash
+		,SS.SYU_INSURANCE AS syuInsurance,SS.SYU_COM_RATE AS syuComRate,SS.SYU_COM_CASH AS syuComCash,SS.SYU_PERSONAL_RATE  AS syuPersonalRate,SS.SYU_PERSONAL_CASH  AS syuPersonalCash
+		,SS.YLIAO_INSURANCE  AS yliaoInsurance,SS.YLIAO_COM_RATE AS yliaoComRate,SS.YLIAO_COM_CASH AS yliaoComCash,SS.YLIAO_PERSONAL_RATE AS yliaoPersonalRate,SS.YLIAO_PERSONAL_CASH AS yliaoPersonalCash
+		,SS.GJJ_INSURANCE AS gjjInsurance,SS.GJJ_COM_RATE AS gjjComRate,SS.GJJ_COM_CASH AS gjjComCash,SS.GJJ_PERSONAL_RATE  AS gjjPersonalRate,SS.GJJ_PERSONAL_CASH  AS gjjPersonalCash
+		,SS.GJJ_ADD AS gjjAdd, SS.PAYED_TIME AS ssPayedTime,SS.STATUS AS ssStatus
+		FROM T_SALARY_TRANSACTION S,T_SS_TRANSACTION SS, T_EMPLOYEE_COMPANY C
+		WHERE SS.ID=S.SS_ID AND S.EMPLOYEE_ID=C.EMPLOYEE_ID
+		<if test="companyId != null and companyId !=''">
+			AND S.COMPANY_ID=#{companyId}
+			AND SS.COMPANY_ID=#{companyId}
+		</if>
+		<if test="employeeId != null and employeeId !=''">
+			AND S.EMPLOYEE_ID=#{employeeId}
+			AND SS.EMPLOYEE_ID=#{employeeId}
+		</if>
+		<if test="cardNo != null and cardNo !=''">
+			AND C.CARD_NO=#{cardNo}
+		</if>
+		<if test="employeeName != null and employeeName !=''">
+			AND S.EMPLOYEE_NAME=#{employeeName}
+		</if>
+		<if test="employeeCompanyStatus != null and employeeCompanyStatus.size() > 0">
+			AND 
+		  	<foreach collection="employeeCompanyStatus" item="statusItem" index="index" open="(" close=")" separator=" OR ">
+		      C.STATUS = #{statusItem}
+	      	</foreach>
+	     </if>
+	     <if test="salaryPayStatus != null and salaryPayStatus.size() > 0">
+			AND 
+		  	<foreach collection="salaryPayStatus" item="statusItem" index="index" open="(" close=")" separator=" OR ">
+		      S.STATUS = #{statusItem}
+	      	</foreach>
+	     </if>
+	      <if test="ssPayStatus != null and ssPayStatus.size() > 0">
+			AND 
+		  	<foreach collection="ssPayStatus" item="statusItem" index="index" open="(" close=")" separator=" OR ">
+		      SS.STATUS = #{statusItem}
+	      	</foreach>
+	     </if>
+			ORDER BY S.CREATE_TIME DESC
+			LIMIT #{startIndex},#{pageSize}
+	</select>
+	
+	<select id="getSalaryPayTransactionPaginationCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT COUNT(0)
+		FROM T_SALARY_TRANSACTION S,T_SS_TRANSACTION SS, T_EMPLOYEE_COMPANY C
+		WHERE SS.ID=S.SS_ID AND S.EMPLOYEE_ID=C.EMPLOYEE_ID
+		<if test="companyId != null and companyId !=''">
+			AND S.COMPANY_ID=#{companyId}
+			AND SS.COMPANY_ID=#{companyId}
+		</if>
+		<if test="employeeId != null and employeeId !=''">
+			AND S.EMPLOYEE_ID=#{employeeId}
+			AND SS.EMPLOYEE_ID=#{employeeId}
+		</if>
+		<if test="cardNo != null and cardNo !=''">
+			AND C.CARD_NO=#{cardNo}
+		</if>
+		<if test="employeeName != null and employeeName !=''">
+			AND S.EMPLOYEE_NAME=#{employeeName}
+		</if>
+		<if test="employeeCompanyStatus != null and employeeCompanyStatus.size() > 0">
+			AND 
+		  	<foreach collection="employeeCompanyStatus" item="statusItem" index="index" open="(" close=")" separator=" OR ">
+		      C.STATUS = #{statusItem}
+	      	</foreach>
+	     </if>
+	     <if test="salaryPayStatus != null and salaryPayStatus.size() > 0">
+			AND 
+		  	<foreach collection="salaryPayStatus" item="statusItem" index="index" open="(" close=")" separator=" OR ">
+		      S.STATUS = #{statusItem}
+	      	</foreach>
+	     </if>
+	      <if test="ssPayStatus != null and ssPayStatus.size() > 0">
+			AND 
+		  	<foreach collection="ssPayStatus" item="statusItem" index="index" open="(" close=")" separator=" OR ">
+		      SS.STATUS = #{statusItem}
+	      	</foreach>
+	     </if>
+	</select>
+	
+</mapper>

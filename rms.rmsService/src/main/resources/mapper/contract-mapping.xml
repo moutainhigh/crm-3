@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.rms.contract.mapper.ContractMapper">
+	<resultMap type="com.hefei.rms.contract.po.ContractInfo" id="contract">
+		<id column="ID" property="id" />
+		<result column="EMPLOYEE_ID" property="employeeId" />
+		<result column="CONTRACT_START_TIME" property="contractStartTime" />
+		<result column="CONTRACT_END_TIME" property="contractEndTime" />
+		<result column="CONTRACT_TYPE" property="contractType" />
+		<result column="CONTRACT_PICS" property="contractPics" />
+		<result column="AUDIT_USER_ID" property="auditUserId" />
+		<result column="AUDIT_STATUS" property="auditStatus" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<insert id="saveContract" parameterType="com.hefei.rms.contract.po.ContractInfo">   
+		<![CDATA[
+			INSERT INTO T_EMPLOYEE_CONTRACT(ID,EMPLOYEE_ID,CONTRACT_START_TIME,CONTRACT_END_TIME,CONTRACT_TYPE,CONTRACT_PICS,AUDIT_USER_ID,AUDIT_STATUS,
+			DEL_FLAG,CREATE_TIME,UPDATE_TIME)  VALUES 
+			(#{id},#{employeeId},#{contractStartTime},#{contractEndTime},#{contractType},#{contractPics},#{auditUserId},#{auditStatus},
+			#{delFlag},#{createTime},#{updateTime})
+		]]>
+	</insert>
+	<update id="updateContract" parameterType="Map">
+		<![CDATA[
+			UPDATE T_EMPLOYEE_CONTRACT SET DEL_FLAG = #{delFlag},AUDIT_STATUS = #{auditStatus},CONTRACT_TYPE = #{contractType},UPDATE_TIME = #{updateTime} WHERE ID = #{id}
+		]]>
+	</update>
+    <select id="findContract" resultMap="contract">
+		SELECT * FROM T_EMPLOYEE_CONTRACT WHERE EMPLOYEE_ID = #{employeeId} AND AUDIT_STATUS  = '1'
+	</select>
+</mapper>

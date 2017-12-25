@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.sample.mapper.SampleMapper">
+	<resultMap type="com.hefei.sample.po.Sample" id="sample">
+		<id column="ID" property="id" />
+		<result column="TYPE" property="type" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<!-- 根据是手机号查登录用户信息 -->
+	<select id="getById" parameterType="long" resultMap="sample">
+		<![CDATA[
+			SELECT * FROM T_SAMPLE WHERE ID=#{id}
+			]]>
+	</select>
+	
+	<!-- 添加用户邮箱 -->
+	<insert id="save" parameterType="com.hefei.sample.po.Sample">
+		<![CDATA[
+			INSERT INTO T_SAMPLE(ID,TYPE,DEL_FLAG,CREATE_TIME,UPDATE_TIME)
+			VALUES(#{id},#{type},#{delFlag},#{createTime},#{updateTime})
+		]]>
+	</insert>
+</mapper>
+

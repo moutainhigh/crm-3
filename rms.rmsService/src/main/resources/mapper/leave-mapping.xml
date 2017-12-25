@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.rms.leave.mapper.LeaveMapper">
+	<resultMap type="com.hefei.rms.leave.po.Leave" id="leave">
+		<id column="ID" property="id" />
+		<result column="COMPANY_ID" property="companyId" />
+		<result column="EMPLOYEE_ID" property="employeeId" />
+		<result column="EMPLOYEE_NAME" property="employeeName" />
+		<result column="TYPE" property="type" />
+		<result column="CONTENT" property="content" />
+		<result column="START_TIME" property="startTime" />
+		<result column="END_TIME" property="endTime" />
+		<result column="TOTAL_TIME_DAY" property="totalTimeDay" />
+		<result column="TOTAL_TIME_HOUR" property="totalTimeHour" />
+		<result column="AUDIT_EMPLOYEE_ID" property="auditEmployeeId" />
+		<result column="AUDIT_EMPLOYEE_NAME" property="auditEmployeeName" />
+		<result column="AUDIT_STATUS" property="auditStatus" />
+		<result column="AUDIT_TIME" property="auditTime" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<insert id="saveLeave" parameterType="com.hefei.rms.leave.po.Leave">   
+		<![CDATA[
+			INSERT INTO T_EMPLOYEE_LEAVE(ID,COMPANY_ID,EMPLOYEE_ID,EMPLOYEE_NAME,TYPE,CONTENT,START_TIME,END_TIME,TOTAL_TIME_DAY,TOTAL_TIME_HOUR
+			,AUDIT_EMPLOYEE_ID,AUDIT_EMPLOYEE_NAME,AUDIT_STATUS,AUDIT_TIME,DEL_FLAG,CREATE_TIME,UPDATE_TIME)  VALUES 
+			(#{id},#{companyId},#{employeeId},#{employeeName},#{type},#{content},#{startTime},#{endTime},#{totalTimeDay},#{totalTimeHour},#{auditEmployeeId}
+			,#{auditEmployeeName},#{auditStatus},#{auditTime},#{delFlag},#{createTime},#{updateTime})
+		]]>
+	</insert>
+	
+	<select id="getLeave" resultMap="leave" parameterType="long">
+		SELECT * FROM T_EMPLOYEE_LEAVE WHERE ID = #{id}
+	</select>
+	
+	<update id="saveLeaveAudit" parameterType="map">
+			UPDATE T_EMPLOYEE_LEAVE SET AUDIT_EMPLOYEE_ID=#{auditEmployeeId}, AUDIT_STATUS=#{auditStatus}, AUDIT_TIME=#{auditTime}, UPDATE_TIME=#{updateTime}
+			WHERE ID = #{leaveId}
+	</update>
+	
+	<select id="getLeavePaginationItems" resultMap="leave" parameterType="map">
+		SELECT *  FROM T_EMPLOYEE_LEAVE
+		WHERE 1=1
+		<if test="employeeName != null and employeeName !=''">
+			AND EMPLOYEE_NAME=#{employeeName}
+		</if>
+		<if test="employeeId != null and employeeId !=''">
+			AND EMPLOYEE_ID=#{employeeId}
+		</if>
+		<if test="cardNo != null and cardNo !=''">
+			AND CARD_NO=#{cardNo}
+		</if>
+		<if test="companyId != null and companyId !=''">
+			AND COMPANY_ID=#{companyId}
+		</if>
+		<if test="auditEmployeeId != null and auditEmployeeId !=''">
+			AND AUDIT_EMPLOYEE_ID=#{auditEmployeeId}
+		</if>
+		<if test="startTime != null and startTime !=''">
+			AND START_TIME &gt;= #{startTime}
+		</if>
+		<if test="endTime != null and endTime !=''">
+			AND END_TIME &lt;= #{endTime}
+		</if>
+		
+		<if test="leaveType != null and leaveType > 0">
+			AND 
+		  	<foreach collection="leaveType" item="eachItem" index="index" open="(" close=")" separator=" OR ">
+		      TYPE = #{eachItem}
+	      	</foreach>
+	     </if>
+	     <if test="auditStatus != null and auditStatus.size() > 0">
+	      	AND 
+		  	<foreach collection="auditStatus" item="eachItem" index="index" open="(" close=")" separator=" OR ">
+		      AUDIT_STATUS = #{eachItem}
+	      	</foreach>
+	      </if>
+			ORDER BY CREATE_TIME DESC
+			LIMIT #{startIndex},#{pageSize}
+	</select>
+	
+	<select id="getLeavePaginationCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT  COUNT(0) FROM T_EMPLOYEE_LEAVE
+		WHERE 1=1
+		<if test="employeeName != null and employeeName !=''">
+			AND EMPLOYEE_NAME=#{employeeName}
+		</if>
+		<if test="employeeId != null and employeeId !=''">
+			AND EMPLOYEE_ID=#{employeeId}
+		</if>
+		<if test="cardNo != null and cardNo !=''">
+			AND CARD_NO=#{cardNo}
+		</if>
+		<if test="companyId != null and companyId !=''">
+			AND COMPANY_ID=#{companyId}
+		</if>
+		<if test="auditEmployeeId != null and auditEmployeeId !=''">
+			AND AUDIT_EMPLOYEE_ID=#{auditEmployeeId}
+		</if>
+		<if test="startTime != null and startTime !=''">
+			AND START_TIME &gt;= #{startTime}
+		</if>
+		<if test="endTime != null and endTime !=''">
+			AND END_TIME &lt;= #{endTime}
+		</if>
+		
+		<if test="leaveType != null and leaveType > 0">
+			AND 
+		  	<foreach collection="leaveType" item="eachItem" index="index" open="(" close=")" separator=" OR ">
+		      TYPE = #{eachItem}
+	      	</foreach>
+	     </if>
+	     <if test="auditStatus != null and auditStatus.size() > 0">
+	      	AND 
+		  	<foreach collection="auditStatus" item="eachItem" index="index" open="(" close=")" separator=" OR ">
+		      AUDIT_STATUS = #{eachItem}
+	      	</foreach>
+	      </if>
+	</select>
+	
+</mapper>

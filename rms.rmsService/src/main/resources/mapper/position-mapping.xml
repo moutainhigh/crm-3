@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.rms.position.mapper.PositionMapper">
+	<resultMap type="com.hefei.rms.position.po.Position" id="position">
+		<id column="ID" property="id" />
+		<result column="DEPARTMENT_ID" property="departmentId" />
+		<result column="POSITION_NAME" property="positionName" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<insert id="savePositionInfo" parameterType="com.hefei.rms.position.po.Position">   
+		<![CDATA[
+			INSERT INTO T_POSITION(ID,DEPARTMENT_ID,POSITION_NAME,DEL_FLAG,CREATE_TIME,UPDATE_TIME)  VALUES 
+			(#{id},#{departmentId},#{positionName},#{delFlag},#{createTime},#{updateTime})
+		]]>
+	</insert>
+	<update id="updatePosition" parameterType="Map">
+		<![CDATA[
+			UPDATE T_POSITION SET DEL_FLAG = #{delFlag},UPDATE_TIME = #{updateTime} WHERE ID = #{id}
+		]]>
+	</update>
+	<select id="getPositionById" resultMap="position" parameterType="map">
+		SELECT * FROM T_POSITION WHERE ID = #{id}
+		<if test="delFlag != null and delFlag !=''">
+			 AND DEL_FLAG=#{delFlag}
+		</if>
+	</select>
+	<select id="getPositionByDepartment" resultMap="position" parameterType="map">
+		SELECT * FROM T_POSITION WHERE DEPARTMENT_ID = #{departmentId}
+		<if test="delFlag != null and delFlag !=''">
+			 AND DEL_FLAG=#{delFlag}
+		</if>
+	</select>
+</mapper>

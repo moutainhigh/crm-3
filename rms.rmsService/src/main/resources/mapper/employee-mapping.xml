@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.rms.employee.mapper.EmployeeMapper">
+
+	<resultMap type="com.hefei.rms.employee.po.Employee" id="employee">
+		<id column="ID" property="id" />
+		<result column="CREATOR" property="creator" />
+		<result column="UPDATER" property="updater" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<resultMap type="com.hefei.rms.employee.po.EmployeeCompany" id="employeeCompany">
+		<id column="ID" property="id" />
+		<result column="COMPANY_ID" property="companyId" />
+		<result column="EMPLOYEE_ID" property="employeeId" />
+		<result column="CARD_NO" property="cardNo" />
+		<result column="EMAIL" property="email" />
+		<result column="MOBILE" property="mobile" />
+		<result column="SUPERIOR" property="superior" />
+		<result column="SUPERIOR_EMPLOYEE_NAME" property="superiorEmployeeName" />
+		
+		<result column="STATUS" property="status" />
+		<result column="ONBOARD_DATE" property="onBoardDate" />
+		<result column="LEAVE_DATE" property="leaveDate" />
+		<result column="CREATOR" property="creator" />
+		<result column="UPDATER" property="updater" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<resultMap type="com.hefei.rms.employee.po.UserEmployee" id="userEmployee">
+		<id column="ID" property="id" />
+		<result column="USER_ID" property="userId" />
+		<result column="EMPLOYEE_ID" property="employeeId" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATOR" property="creator" />
+		<result column="UPDATER" property="updater" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+		
+	<insert id="saveEmployee" parameterType="com.hefei.rms.employee.po.Employee">   
+		<![CDATA[
+			INSERT INTO T_EMPLOYEE(ID,CREATOR,UPDATER,CREATE_TIME,UPDATE_TIME)  VALUES  (#{id},#{creator},#{updater},#{createTime},#{updateTime})
+		]]>
+	</insert>
+	
+	<select id="getEmployeeCompanyById" resultMap="employeeCompany" parameterType="long">
+		SELECT * FROM T_EMPLOYEE_COMPANY WHERE ID = #{id}
+	</select>
+	<select id="getEmployeeCompany" resultMap="employeeCompany"  parameterType="map">
+		SELECT * FROM T_EMPLOYEE_COMPANY WHERE COMPANY_ID = #{companyId} AND EMPLOYEE_ID=#{employeeId}
+	</select>
+	
+	<insert id="saveEmployeeCompany" parameterType="com.hefei.rms.employee.po.EmployeeCompany">   
+		<![CDATA[
+			INSERT INTO T_EMPLOYEE_COMPANY(ID,COMPANY_ID,EMPLOYEE_ID,CARD_NO,EMAIL,MOBILE,SUPERIOR,SUPERIOR_EMPLOYEE_NAME,STATUS,ONBOARD_DATE,LEAVE_DATE,CREATOR,UPDATER,CREATE_TIME,UPDATE_TIME)  VALUES 
+			(#{id},#{companyId},#{employeeId},#{cardNo},#{email},#{mobile},#{superior},#{superiorEmployeeName},#{status},#{onBoardDate},#{leaveDate},#{creator},#{updater},#{createTime},#{updateTime})
+		]]>
+	</insert>
+	<update id="updateEmployeeCompany" parameterType="com.hefei.rms.employee.po.EmployeeCompany">
+			UPDATE T_EMPLOYEE_COMPANY SET SUPERIOR = #{superior},SUPERIOR_EMPLOYEE_NAME = #{superiorEmployeeName},STATUS=#{status},
+			CARD_NO = #{cardNo}, EMAIL = #{email}, MOBILE = #{mobile}, UPDATER = #{updater}, UPDATE_TIME = #{updateTime}
+			WHERE COMPANY_ID = #{companyId} AND EMPLOYEE_ID=#{employeeId}
+	</update>
+	
+	<select id="getUserEmployeeByUserId" resultMap="userEmployee" parameterType="long">
+		SELECT * FROM T_USER_EMPLOYEE WHERE USER_ID = #{userId}
+	</select>
+	<select id="getUserEmployeeByEmployeeId" resultMap="userEmployee" parameterType="long">
+		SELECT * FROM T_USER_EMPLOYEE WHERE EMPLOYEE_ID = #{employeeId}
+	</select>
+	<insert id="saveUserEmployee" parameterType="com.hefei.rms.employee.po.UserEmployee">   
+		<![CDATA[
+			INSERT INTO T_USER_EMPLOYEE(ID,USER_ID,EMPLOYEE_ID,DEL_FLAG,CREATOR,UPDATER,CREATE_TIME,UPDATE_TIME)  VALUES 
+			(#{id},#{userId},#{employeeId},#{delFlag},#{creator},#{updater},#{createTime},#{updateTime})
+		]]>
+	</insert>
+	<insert id="saveEmployeePosition" parameterType="com.hefei.rms.employee.po.EmployeePosition">   
+		<![CDATA[
+			INSERT INTO T_EMPLOYEE_POSITION(ID,POSITION_ID,EMPLOYEE_ID,DEL_FLAG,CREATE_TIME,UPDATE_TIME)  VALUES 
+			(#{id},#{positionId},#{employeeId},#{delFlag},#{createTime},#{updateTime})
+		]]>
+	</insert>
+		
+	<update id="updateEmployee" parameterType="com.hefei.rms.employee.po.Employee">
+			UPDATE T_EMPLOYEE 
+			<set>
+				<if test="updater != null">
+					UPDATER = #{updater},
+				</if>
+				<if test="updateTime != null">
+					UPDATE_TIME = #{updateTime},
+				</if>
+			</set>
+			WHERE ID = #{id}
+	</update>
+	
+	<select id="getEmployeePaginationItems" resultType="com.hefei.api.rms.employee.vo.EmployeeInfo" parameterType="map">
+		SELECT  U.ID AS userId, EMP.ID AS employeeId, U.NAME AS name, U.SEX AS sex, EMP_COM.CARD_NO AS cardNo, EMP_COM.SUPERIOR AS superior,EMP_COM.SUPERIOR_EMPLOYEE_NAME AS superiorEmployeeName, EMP_COM.STATUS AS status
+		, EMP_COM.ONBOARD_DATE AS onboardDate, EMP_COM.CREATOR AS creator, EMP_COM.CREATE_TIME AS createTime
+		FROM T_EMPLOYEE EMP,T_EMPLOYEE_COMPANY EMP_COM, T_USER U, T_USER_EMPLOYEE UE
+		WHERE EMP.ID = EMP_COM.EMPLOYEE_ID AND EMP_COM.COMPANY_ID=#{companyId} AND EMP.ID=UE.EMPLOYEE_ID AND UE.USER_ID=U.ID
+		<if test="name != null and name !=''">
+			AND U.NAME=#{name}
+		</if>
+		<if test="cardNo != null and cardNo !=''">
+			AND EMP_COM.CARD_NO=#{cardNo}
+		</if>
+		<if test="employeeCompanyStatus != null and employeeCompanyStatus.size() > 0">
+			AND 
+		  	<foreach collection="employeeCompanyStatus" item="statusItem" index="index" open="(" close=")" separator=" OR ">
+		      EMP_COM.STATUS = #{statusItem}
+	      	</foreach>
+	     </if>
+	     <if test="employeeSex != null and employeeSex.size() > 0">
+	      	AND 
+		  	<foreach collection="employeeSex" item="sexItem" index="index" open="(" close=")" separator=" OR ">
+		      U.SEX = #{sexItem}
+	      	</foreach>
+	      </if>
+			ORDER BY EMP.CREATE_TIME DESC
+			LIMIT #{startIndex},#{pageSize}
+	</select>
+	
+	<select id="getEmployeePaginationCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT  COUNT(0) FROM T_EMPLOYEE EMP,T_EMPLOYEE_COMPANY EMP_COM,T_USER U, T_USER_EMPLOYEE UE
+		WHERE EMP.ID = EMP_COM.EMPLOYEE_ID AND EMP_COM.COMPANY_ID=#{companyId} AND EMP.ID=UE.EMPLOYEE_ID AND UE.USER_ID=U.ID 
+		<if test="name != null and name !=''">
+			AND U.NAME=#{name}
+		</if>
+		<if test="cardNo != null and cardNo !=''">
+			AND EMP_COM.CARD_NO=#{cardNo}
+		</if>
+		<if test="employeeCompanyStatus != null and employeeCompanyStatus.size() > 0">
+			AND 
+		  	<foreach collection="employeeCompanyStatus" item="statusItem" index="index" open="(" close=")" separator=" OR ">
+		      EMP_COM.STATUS = #{statusItem}
+	      	</foreach>
+	     </if>
+	     <if test="employeeSex != null and employeeSex.size() > 0">
+	      	AND 
+		  	<foreach collection="employeeSex" item="sexItem" index="index" open="(" close=")" separator=" OR ">
+		      U.SEX = #{sexItem}
+	      	</foreach>
+	      </if>
+	</select>
+	<select id="getEmployee" resultType="com.hefei.api.rms.employee.vo.EmployeeInfo" parameterType="Long">
+		SELECT U.ID AS userId,EMP.ID AS employeeId, U.NAME AS name, U.SEX AS sex,U.IDNO AS idNo,U.BIRTHDAY AS birthday
+		,U.HUKOU_TYPE AS hukouType,U.HUKOU_PROVINCE_CODE AS hukouProvinceCode,U.HUKOU_CITY_CODE AS hukouCityCode,U.HUKOU_AREA_CODE AS hukouAreaCode
+		,U.LIVE_PROVINCE_CODE AS liveProvinceCode,U.LIVE_CITY_CODE AS liveCityCode,U.LIVE_AREA_CODE AS liveAreaCode,U.LIVE_ADDRESS AS liveAddress
+		 FROM T_EMPLOYEE EMP, T_USER U, T_USER_EMPLOYEE UE
+		  WHERE EMP.ID = #{id} AND EMP.ID=UE.EMPLOYEE_ID AND UE.USER_ID=U.ID
+	</select>
+	<select id="getEmployeeByIdNo" resultType="com.hefei.api.rms.employee.vo.EmployeeInfo" parameterType="string">
+		SELECT U.ID AS userId, EMP.ID AS employeeId, U.NAME AS name, U.SEX AS sex,U.IDNO AS idNo,U.BIRTHDAY AS birthday
+		,U.HUKOU_TYPE AS hukouType,U.HUKOU_PROVINCE_CODE AS hukouProvinceCode,U.HUKOU_CITY_CODE AS hukouCityCode,U.HUKOU_AREA_CODE AS hukouAreaCode
+		,U.LIVE_PROVINCE_CODE AS liveProvinceCode,U.LIVE_CITY_CODE AS liveCityCode,U.LIVE_AREA_CODE AS liveAreaCode,U.LIVE_ADDRESS AS liveAddress
+		 FROM T_EMPLOYEE EMP, T_USER U, T_USER_EMPLOYEE UE
+		  WHERE U.IDNO = #{idNo} AND EMP.ID=UE.EMPLOYEE_ID AND UE.USER_ID=U.ID
+	</select>
+	<select id="getEmployeeByUserId" resultType="com.hefei.api.rms.employee.vo.EmployeeInfo" parameterType="Long">
+		SELECT  U.ID AS userId,EMP.ID AS employeeId, U.NAME AS name, U.SEX AS sex,U.IDNO AS idNo,U.BIRTHDAY AS birthday
+		,U.HUKOU_TYPE AS hukouType,U.HUKOU_PROVINCE_CODE AS hukouProvinceCode,U.HUKOU_CITY_CODE AS hukouCityCode,U.HUKOU_AREA_CODE AS hukouAreaCode
+		,U.LIVE_PROVINCE_CODE AS liveProvinceCode,U.LIVE_CITY_CODE AS liveCityCode,U.LIVE_AREA_CODE AS liveAreaCode,U.LIVE_ADDRESS AS liveAddress
+		 FROM T_EMPLOYEE EMP, T_USER U, T_USER_EMPLOYEE UE 
+		 WHERE U.ID=#{userId} AND EMP.ID=UE.EMPLOYEE_ID AND UE.USER_ID=U.ID
+	</select>
+	
+	<select id="getEmployeeDepartPosition" resultType="com.hefei.api.rms.employee.vo.EmployeeDepartPositionDTO" parameterType="map">
+		SELECT D.ID AS departmentId, D.COMPANY_ID AS companyId, D.PARENT_ID AS parentDepartmentId,EP.EMPLOYEE_ID AS employeeId,
+		 D.DEPARTMENT_NAME AS departmentName, D.DEPARTMENT_INFO AS departmentInfo, D.DEL_FLAG AS departmentDelFlag,
+		 P.ID AS positionId, P.POSITION_NAME AS positionName, P.DEL_FLAG AS positionDelFlag,
+		 P.CREATE_TIME AS createTime, P.UPDATE_TIME AS updateTime
+		FROM T_DEPARTMENT D, T_POSITION P, T_EMPLOYEE_POSITION EP
+		WHERE D.ID=P.DEPARTMENT_ID AND P.ID = EP.POSITION_ID AND EP.EMPLOYEE_ID=#{employeeId} AND D.COMPANY_ID=#{companyId}
+	</select>
+	
+	<update id="updateEmployeeDepartPosition" parameterType="map">
+		UPDATE T_EMPLOYEE_POSITION EP, T_POSITION P
+		 SET EP.POSITION_ID=#{positionId}
+		 WHERE EP.POSITION_ID= P.ID AND P.DEPARTMENT_ID=#{departmentId} AND EP.EMPLOYEE_ID=#{employeeId}
+
+	</update>
+</mapper>

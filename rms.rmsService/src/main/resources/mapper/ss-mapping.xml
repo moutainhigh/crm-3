@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.hefei.rms.socialsecurity.mapper.SocialsecurityMapper">
+	<resultMap type="com.hefei.rms.socialsecurity.po.EmployeeSS" id="employeeSS">
+		<id column="ID" property="id" />
+		<result column="COMPANY_ID" property="companyId" />
+		<result column="EMPLOYEE_ID" property="employeeId" />
+		<result column="EMPLOYEE_NAME" property="employeeName" />
+		<result column="SS_BASE_SALARY" property="ssBaseSalary" />
+		<result column="SS_CARD" property="ssCard" />
+							
+		<result column="YLAO_INSURANCE" property="ylaoInsurance" />
+		<result column="YLAO_COM_RATE" property="ylaoComRate" />
+		<result column="YLAO_COM_CASH" property="ylaoComCash" />
+		<result column="YLAO_PERSONAL_RATE" property="ylaoPersonalRate" />
+		<result column="YLAO_PERSONAL_CASH" property="ylaoPersonalCash" />
+		<result column="SYE_INSURANCE" property="syeInsurance" />
+		<result column="SYE_COM_RATE" property="syeComRate" />
+		<result column="SYE_COM_CASH" property="syeComCash" />
+		<result column="SYE_PERSONAL_RATE" property="syePersonalRate" />
+		<result column="SYE_PERSONAL_CASH" property="syePersonalCash" />
+		<result column="GSH_INSURANCE" property="gshInsurance" />
+		<result column="GSH_COM_RATE" property="gshComRate" />
+		<result column="GSH_COM_CASH" property="gshComCash" />
+		<result column="GSH_PERSONAL_RATE" property="gshPersonalRate" />
+		<result column="GSH_PERSONAL_CASH" property="gshPersonalCash" />
+		<result column="SYU_INSURANCE" property="syuInsurance" />
+		<result column="SYU_COM_RATE" property="syuComRate" />
+		<result column="SYU_COM_CASH" property="syuComCash" />
+		<result column="SYU_PERSONAL_RATE" property="syuPersonalRate" />
+		<result column="SYU_PERSONAL_CASH" property="syuPersonalCash" />
+		<result column="YLIAO_INSURANCE " property="yliaoInsurance" />
+		<result column="YLIAO_COM_RATE" property="yliaoComRate" />
+		<result column="YLIAO_COM_CASH" property="yliaoComCash" />
+		<result column="YLIAO_PERSONAL_RATE" property="yliaoPersonalRate" />
+		<result column="YLIAO_PERSONAL_CASH" property="yliaoPersonalCash" />
+		<result column="GJJ_INSURANCE" property="gjjInsurance" />
+		<result column="GJJ_COM_RATE" property="gjjComRate" />
+		<result column="GJJ_COM_CASH" property="gjjComCash" />
+		<result column="GJJ_PERSONAL_RATE" property="gjjPersonalRate" />
+		<result column="GJJ_PERSONAL_CASH" property="gjjPersonalCash" />
+		<result column="GJJ_ADD" property="gjjAdd" />
+				
+		<result column="REMARK" property="remark" />
+		<result column="CREATOR" property="creator" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<select id="getEmployeeSS" resultMap="employeeSS" parameterType="map">
+		<![CDATA[
+			SELECT * FROM T_EMPLOYEE_SS WHERE EMPLOYEE_ID = #{employeeId} AND COMPANY_ID = #{companyId}
+		]]>
+	</select>
+	
+	<insert id="saveEmployeeSS" parameterType="com.hefei.rms.socialsecurity.po.EmployeeSS">   
+		<![CDATA[
+			INSERT INTO T_EMPLOYEE_SS(ID,COMPANY_ID, EMPLOYEE_ID,EMPLOYEE_NAME,SS_BASE_SALARY,  SS_CARD, YLAO_INSURANCE,  YLAO_COM_RATE,  YLAO_COM_CASH, YLAO_PERSONAL_RATE
+			,  YLAO_PERSONAL_CASH, SYE_INSURANCE, SYE_COM_RATE, SYE_COM_CASH, SYE_PERSONAL_RATE,  SYE_PERSONAL_CASH, GSH_INSURANCE, GSH_COM_RATE,  GSH_COM_CASH
+			, GSH_PERSONAL_RATE, GSH_PERSONAL_CASH, SYU_INSURANCE, SYU_COM_RATE,   SYU_COM_CASH,  SYU_PERSONAL_RATE,SYU_PERSONAL_CASH, YLIAO_INSURANCE, YLIAO_COM_RATE
+			,  YLIAO_COM_CASH,    YLIAO_PERSONAL_RATE,YLIAO_PERSONAL_CASH,GJJ_INSURANCE,   GJJ_COM_RATE,   GJJ_COM_CASH, GJJ_PERSONAL_RATE,GJJ_PERSONAL_CASH, GJJ_ADD
+			,  REMARK, CREATOR, CREATE_TIME,UPDATE_TIME)  VALUES 
+			(#{id},#{companyId},#{employeeId},#{employeeName},#{ssBaseSalary},#{ssCard},#{ylaoInsurance},
+				#{ylaoComRate},#{ylaoComCash},#{ylaoPersonalRate},#{ylaoPersonalCash},#{syeInsurance},#{syeComRate},
+				#{syeComCash},#{syePersonalRate},#{syePersonalCash},
+				#{gshInsurance},#{gshComRate},#{gshComCash},#{gshPersonalRate},#{gshPersonalCash},
+				#{syuInsurance},#{syuComRate},#{syuComCash},#{syuPersonalRate},#{syuPersonalCash},
+				#{yliaoInsurance},#{yliaoComRate},#{yliaoComCash},#{yliaoPersonalRate},
+				#{yliaoPersonalCash},#{gjjInsurance},#{gjjComRate},#{gjjComCash},
+				#{gjjPersonalRate},#{gjjPersonalCash},#{gjjAdd},#{remark},#{creator},#{createTime},#{updateTime})
+		]]>
+	</insert>
+
+	
+	<update id="updateEmployeeSS" parameterType="com.hefei.rms.socialsecurity.po.EmployeeSS">
+		UPDATE T_EMPLOYEE_SS
+		<set>
+			<if test="companyId!=null">COMPANY_ID=#{companyId},</if>
+			<if test="employeeId!=null">EMPLOYEE_ID=#{employeeId},</if>
+			<if test="employeeName!=null">EMPLOYEE_NAME=#{employeeName},</if>
+			<if test="ssBaseSalary!=null">SS_BASE_SALARY=#{ssBaseSalary},</if>
+			<if test="ssCard!=null">SS_CARD=#{ssCard},</if>
+			<if test="ylaoInsurance!=null">YLAO_INSURANCE=#{ylaoInsurance},</if>
+			<if test="ylaoComRate!=null">YLAO_COM_RATE=#{ylaoComRate},</if>
+			<if test="ylaoComCash!=null">YLAO_COM_CASH=#{ylaoComCash},</if>
+			<if test="ylaoPersonalRate !=null">YLAO_PERSONAL_RATE=#{ylaoPersonalRate},</if>
+			<if test="ylaoPersonalCash!=null">YLAO_PERSONAL_CASH=#{ylaoPersonalCash},</if>
+			<if test="syeInsurance!=null">SYE_INSURANCE=#{syeInsurance},</if>
+			<if test="syeComRate!=null">SYE_COM_RATE=#{syeComRate},</if>
+			<if test="syeComCash!=null">SYE_COM_CASH=#{syeComCash},</if>
+			<if test="syePersonalRate!=null">SYE_PERSONAL_RATE=#{syePersonalRate},</if>
+			<if test="syePersonalCash!=null">SYE_PERSONAL_CASH=#{syePersonalCash},</if>
+			<if test="gshInsurance!=null">GSH_INSURANCE=#{gshInsurance},</if>
+			<if test="gshComRate!=null">GSH_COM_RATE=#{gshComRate},</if>
+			<if test="gshComCash!=null">GSH_COM_CASH=#{gshComCash},</if>
+			<if test="gshPersonalRate!=null">GSH_PERSONAL_RATE=#{gshPersonalRate},</if>
+			<if test="gshPersonalCash!=null">GSH_PERSONAL_CASH=#{gshPersonalCash},</if>
+			<if test="syuInsurance!=null">SYU_INSURANCE=#{syuInsurance},</if>
+			<if test="syuComRate!=null">SYU_COM_RATE=#{syuComRate},</if>
+			<if test="syuComCash!=null">SYU_COM_CASH=#{syuComCash},</if>
+			<if test="syuPersonalRate!=null">SYU_PERSONAL_RATE=#{syuPersonalRate},</if>
+			<if test="syuPersonalCash!=null">SYU_PERSONAL_CASH=#{syuPersonalCash},</if>
+			<if test="yliaoInsurance!=null">YLIAO_INSURANCE=#{yliaoInsurance},</if>
+			<if test="yliaoComRate!=null">YLIAO_COM_RATE=#{yliaoComRate},</if>
+			<if test="yliaoComCash!=null">YLIAO_COM_CASH=#{yliaoComCash},</if>
+			<if test="yliaoPersonalRate!=null">YLIAO_PERSONAL_RATE=#{yliaoPersonalRate},</if>
+			<if test="yliaoPersonalCash!=null">YLIAO_PERSONAL_CASH=#{yliaoPersonalCash},</if>
+			<if test="gjjInsurance!=null">GJJ_INSURANCE=#{gjjInsurance},</if>
+			<if test="gjjComRate!=null">GJJ_COM_RATE=#{gjjComRate},</if>
+			<if test="gjjComCash!=null">GJJ_COM_CASH=#{gjjComCash},</if>
+			<if test="gjjPersonalRate!=null">GJJ_PERSONAL_RATE=#{gjjPersonalRate},</if>
+			<if test="gjjPersonalCash!=null">GJJ_PERSONAL_CASH=#{gjjPersonalCash},</if>
+			<if test="gjjAdd!=null">GJJ_ADD=#{gjjAdd},</if>
+			<if test="remark!=null">REMARK=#{remark},</if>
+			<if test="creator!=null">CREATOR=#{creator},</if>
+			<if test="createTime!=null">CREATE_TIME=#{createTime},</if>
+			<if test="updateTime!=null">UPDATE_TIME=#{updateTime},</if>
+		</set>
+		WHERE ID = #{id}
+	</update>
+	
+</mapper>

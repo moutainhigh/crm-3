@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.hefei.rms.socialsecurity.mapper.SSRateMapper">
+	<resultMap type="com.hefei.rms.socialsecurity.po.SSRate" id="ssRate">
+		<id column="ID" property="id" />
+		<result column="PROVINCE_CODE" property="provinceCode" />
+		<result column="PROVINCE_NAME" property="provinceName" />
+		<result column="CITY_CODE" property="cityCode" />
+		<result column="CITY_NAME" property="cityName" />
+		<result column="YLAO_COM_RATE" property="ylaoComRate" />
+		<result column="YLAO_PERSONAL_RATE" property="ylaoPersonalRate" />
+		<result column="SYE_COM_RATE" property="syeComRate" />
+		<result column="SYE_PERSONAL_RATE" property="syePersonalRate" />
+		<result column="GSH_COM_RATE" property="gshComRate" />
+		<result column="GSH_PERSONAL_RATE" property="gshPersonalRate" />
+		<result column="SYU_COM_RATE" property="syuComRate" />
+		<result column="SYU_PERSONAL_RATE" property="syuPersonalRate" />
+		<result column="YLIAO_COM_RATE" property="yliaoComRate" />
+		<result column="YLIAO_PERSONAL_RATE" property="yliaoPersonalRate" />
+		<result column="GJJ_COM_RATE" property="gjjComRate" />
+		<result column="GJJ_PERSONAL_RATE" property="gjjPersonalRate" />
+		<result column="CREATOR" property="creator" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<select id="getSSRate" resultMap="ssRate" parameterType="map">
+		<![CDATA[
+			SELECT * FROM T_SS_RATE WHERE PROVINCE_CODE = #{provinceCode} AND CITY_CODE = #{cityCode}
+		]]>
+	</select>
+</mapper>

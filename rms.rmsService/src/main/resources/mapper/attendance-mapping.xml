@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.rms.attendance.mapper.AttendanceMapper">
+	<resultMap type="com.hefei.rms.attendance.po.AttendanceInfo" id="attendance">
+		<id column="ID" property="id" />
+		<result column="COMPANY_ID" property="companyId" />
+		<result column="EMPLOYEE_ID" property="employeeId" />
+		<result column="GOWORK_TIME" property="goworkTime" />
+		<result column="OFFWORK_TIME" property="offworkTime" />
+		<result column="NOTE" property="note" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	<insert id="createAttendance" parameterType="com.hefei.rms.attendance.po.AttendanceInfo"> 
+        <![CDATA[
+			INSERT INTO T_EMPLOYEE_ATTENDANCE( ID,COMPANY_ID,EMPLOYEE_ID,GOWORK_TIME,OFFWORK_TIME,NOTE,DEL_FLAG,CREATE_TIME,UPDATE_TIME) VALUES
+			 (#{id},#{employeeId},#{companyId},#{goworkTime},#{offworkTime},#{note},#{delFlag},#{createTime},#{updateTime})
+		]]>
+    </insert>
+    <update id="updateAttendance" parameterType="Map">
+		<![CDATA[
+			UPDATE T_EMPLOYEE_ATTENDANCE SET DEL_FLAG = #{delFlag} WHERE ID = #{id}
+		]]>
+	</update>
+	<select id="findAttendance" resultMap="attendance">
+		SELECT * FROM T_EMPLOYEE_ATTENDANCE WHERE EMPLOYEE_ID = #{employeeId} AND DEL_FLAG = '1'
+	</select>
+</mapper>

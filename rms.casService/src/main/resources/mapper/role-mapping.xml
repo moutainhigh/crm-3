@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hefei.cas.role.mapper.RoleMapper">
+	<resultMap type="com.hefei.cas.role.po.Role" id="role">
+		<id column="ID" property="id" />
+		<result column="SYSTEM_ID" property="systemId" />
+		<result column="ROLE_NAME" property="roleName" />
+		<result column="REMARK" property="remark" />
+		<result column="COMPANY_ID" property="companyId" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<resultMap type="com.hefei.cas.role.po.RoleModule" id="roleModule">
+		<id column="ID" property="id" />
+		<result column="ROLE_ID" property="roleId" />
+		<result column="MODULE_ID" property="moduleId" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	<insert id="saveRole" parameterType="com.hefei.cas.role.po.Role">
+		<![CDATA[
+			INSERT INTO T_CAS_ROLE(ID, SYSTEM_ID,ROLE_NAME,REMARK,COMPANY_ID,DEL_FLAG,CREATE_TIME,UPDATE_TIME) 
+			VALUES(#{id}, #{systemId},#{roleName}, #{remark}, #{companyId}, #{delFlag},#{createTime}, #{updateTime})
+		]]>
+	</insert>	
+	<select id="getRoleById" parameterType="long" resultMap="role">    
+        <![CDATA[
+        SELECT * FROM T_CAS_ROLE WHERE ID = #{id}
+        ]]>
+	</select>
+	
+	<select id="getManagerRoleByCompanyId" parameterType="map" resultMap="role">    
+        <![CDATA[
+        SELECT R.* FROM T_EMPLOYEE_COMPANY EC , t_user_employee UE, T_USER U , T_CAS_USER_ROLE UR, T_CAS_ROLE R
+		WHERE EC.COMPANY_ID=#{companyId} AND EC.EMPLOYEE_ID=UE.EMPLOYEE_ID AND UE.USER_ID=U.ID 
+		AND U.TYPE=#{type} AND U.ID=UR.USER_ID AND UR.ROLE_ID=R.ID
+        ]]>
+	</select>
+	<select id="getByName" parameterType="Map" resultMap="role">    
+        <![CDATA[
+        SELECT * FROM T_CAS_ROLE WHERE SYSTEM_ID = #{systemId} AND ROLE_NAME=#{roleName} AND COMPANY_ID=#{companyId}
+        ]]>
+	</select>
+	<select id="getRoleBySystemId" parameterType="Map" resultMap="role">
+		 SELECT * FROM T_CAS_ROLE WHERE 1=1
+		 <if test="delFlag != null and delFlag !=''">
+			 AND DEL_FLAG=#{delFlag}
+		</if>
+		AND 
+		 <foreach collection="systemIds" item="systemId" index="index" open="(" close=")" separator=" OR ">
+            SYSTEM_ID = #{systemId}
+        </foreach>
+	</select>
+	
+	<select id="findRolePaginationCount" parameterType="Map" resultType="integer">    
+        SELECT COUNT(0) FROM T_CAS_ROLE WHERE 1=1 
+        <if test="delFlag != null and delFlag !=''">
+			 AND DEL_FLAG=#{delFlag}
+		</if>
+        <if test="systemId != null and systemId!=''">
+			 AND SYSTEM_ID=#{systemId}
+		</if>
+		<if test="companyId != null and companyId!=''">
+			 AND COMPANY_ID=#{companyId}
+		</if>
+        <if test="roleName != null and roleName!=''">
+			 AND ROLE_NAME  LIKE CONCAT('%',#{roleName},'%')
+		</if>
+	</select>
+	
+	<select id="findRolePaginationItems" parameterType="Map" resultMap="role">    
+        SELECT * FROM T_CAS_ROLE WHERE 1=1 
+        <if test="delFlag != null and delFlag !=''">
+			 AND DEL_FLAG=#{delFlag}
+		</if>
+        <if test="systemId != null and systemId!=''">
+			 AND SYSTEM_ID=#{systemId}
+		</if>
+		<if test="companyId != null and companyId!=''">
+			 AND COMPANY_ID=#{companyId}
+		</if>
+        <if test="roleName != null and roleName!=''">
+			 AND ROLE_NAME  LIKE CONCAT('%',#{roleName},'%')
+		</if>
+		 LIMIT #{startSize}, #{pageSize}
+	</select>
+	<delete id="removeAuth" parameterType="Map">
+		DELETE FROM T_CAS_ROLE_MODULE WHERE ROLE_ID=#{roleId} AND 
+		
+		<foreach collection="moduleIds" item="moduleId" index="index" open="(" close=")" separator=" OR ">
+            MODULE_ID = #{moduleId}
+        </foreach>
+	</delete>
+	
+	<select id="findRoleModuleByRoleId" parameterType="map" resultMap="roleModule">    
+        SELECT * FROM T_CAS_ROLE_MODULE WHERE DEL_FLAG=#{delFlag} AND ROLE_ID=#{roleId}
+	</select>
+	
+	 <insert id="saveAuth" parameterType="java.util.List"> 
+            INSERT INTO T_CAS_ROLE_MODULE (ID, ROLE_ID,MODULE_ID,DEL_FLAG,CREATE_TIME, UPDATE_TIME) VALUES
+           <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.id,jdbcType=BIGINT},#{item.roleId,jdbcType=BIGINT},#{item.moduleId,jdbcType=BIGINT},#{item.delFlag,jdbcType=VARCHAR},
+            #{item.createTime,jdbcType=TIMESTAMP},#{item.updateTime,jdbcType=TIMESTAMP})
+           </foreach>
+  </insert>
+</mapper>

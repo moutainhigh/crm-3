@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.cas.admin.mapper.AdminMapper">
+
+	 <resultMap type="com.hefei.cas.admin.po.Admin" id="admin">
+		<id column="ID" property="id" />
+		<result column="USERNAME" property="username" />
+		<result column="PASSWORD" property="password" />
+		<result column="PWD_VERSION" property="pwdVersion" />
+		<result column="REAL_NAME" property="realName" />
+		<result column="MOBILE_NO" property="mobileNo" />
+		<result column="EMAIL" property="email" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATOR" property="creator" />
+		<result column="UPDATER" property="updater" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	<select id="getByUsername" parameterType="string" resultMap="admin">    
+        <![CDATA[
+        SELECT * FROM T_ADMIN WHERE USERNAME = #{username}
+        ]]>
+	</select>
+	
+	<insert id="saveAdmin" parameterType="com.hefei.cas.admin.po.Admin">
+		<![CDATA[
+			INSERT INTO T_ADMIN(ID, USERNAME,PASSWORD,PWD_VERSION,REAL_NAME,MOBILE_NO,EMAIL,DEL_FLAG,CREATOR,UPDATER,CREATE_TIME,UPDATE_TIME) 
+			VALUES(#{id}, #{username}, #{password},#{pwdVersion},#{realName},#{mobileNo},#{email},#{delFlag},#{creator},#{updater},#{createTime}, #{updateTime})
+		]]>
+	</insert>	
+	<select id="getById" parameterType="long" resultMap="admin">    
+        <![CDATA[
+        SELECT * FROM T_ADMIN WHERE ID = #{id}
+        ]]>
+	</select>
+	
+	<select id="getTotalCount" parameterType="Map" resultType="integer">    
+        SELECT COUNT(0) FROM T_ADMIN WHERE 1=1 
+        <if test="username != null and username !=''">
+			 AND USERNAME  LIKE CONCAT('%',#{username},'%')
+		</if>
+		 <if test="mobile != null and mobile !=''">
+			 AND MOBILE_NO = #{mobile}
+		</if>
+		 <if test="email != null and email !=''">
+			 AND EMAIL = #{email}
+		</if>
+	</select>
+	
+	<select id="findAdmin" parameterType="Map" resultMap="admin">    
+        SELECT * FROM T_ADMIN WHERE 1=1 
+       	<if test="username != null and username !=''">
+			 AND USERNAME  LIKE CONCAT('%',#{username},'%')
+		</if>
+		 <if test="mobile != null and mobile !=''">
+			 AND MOBILE_NO = #{mobile}
+		</if>
+		 <if test="email != null and email !=''">
+			 AND EMAIL = #{email}
+		</if>
+		 LIMIT #{startSize}, #{pageSize}
+	</select>
+	
+	<select id="getRoleByAdmin" parameterType="long" resultMap="com.hefei.cas.role.mapper.RoleMapper.role">    
+        SELECT R.* FROM T_CAS_ROLE R, T_CAS_ADMIN_ROLE AR
+		WHERE R.ID=AR.ROLE_ID  AND AR.ADMIN_ID=#{adminId}
+	</select>
+	<select id="haveAuthorization" parameterType="Map" resultType="long">    
+       SELECT AR.ID FROM T_CAS_ADMIN_ROLE AR, T_CAS_ROLE_MODULE RM, T_CAS_MODULE M
+		WHERE AR.ADMIN_ID=#{adminId}  AND M.URL=#{url} AND AR.ROLE_ID=RM.ROLE_ID AND RM.MODULE_ID=M.ID
+	</select>
+	
+	<delete id="removeAuth" parameterType="Map">
+		DELETE FROM T_CAS_ADMIN_ROLE WHERE ADMIN_ID=#{adminId} AND 
+		
+		<foreach collection="roleIds" item="roleId" index="index" open="(" close=")" separator=" OR ">
+            ROLE_ID = #{roleId}
+        </foreach>
+	</delete>
+	
+	 <insert id="saveAuth" parameterType="java.util.List"> 
+            INSERT INTO T_CAS_ADMIN_ROLE (ID, ROLE_ID,ADMIN_ID,DEL_FLAG,CREATE_TIME, UPDATE_TIME) VALUES
+           <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.id,jdbcType=BIGINT},#{item.roleId,jdbcType=BIGINT},#{item.adminId,jdbcType=BIGINT},#{item.delFlag,jdbcType=VARCHAR},
+            #{item.createTime,jdbcType=TIMESTAMP},#{item.updateTime,jdbcType=TIMESTAMP})
+           </foreach>
+  </insert>
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.rms.behavior.mapper.BehaviorMapper">
+	<resultMap type="com.hefei.rms.behavior.po.BehaviorInfo" id="behavior">
+		<id column="ID" property="id" />
+		<result column="COMPANY_ID" property="companyId" />
+		<result column="EMPLOYEE_ID" property="employeeId" />
+		<result column="MONTH" property="month" />
+		<result column="TYPE" property="type" />
+		<result column="SIGN" property="sign" />
+		<result column="AMOUNT" property="amount" />
+		<result column="STATUS" property="status" />
+		<result column="REMARK" property="remark" />
+		<result column="CREATOR" property="creator" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<insert id="saveBehaviorInfo" parameterType="com.hefei.rms.behavior.po.BehaviorInfo">   
+		<![CDATA[
+			INSERT INTO T_EMPLOYEE_BEHAVIOR(ID,COMPANY_ID,EMPLOYEE_ID,MONTH,TYPE,SIGN,AMOUNT,STATUS,REMARK,CREATOR,CREATE_TIME,UPDATE_TIME)  VALUES 
+			(#{id},#{companyId},#{employeeId},#{month},#{type},#{sign},#{amount},#{status},#{remark},#{creator},#{createTime},#{updateTime})
+		]]>
+	</insert>
+
+	<update id="updateBehavior" parameterType="Map">
+		<![CDATA[
+			UPDATE T_EMPLOYEE_BEHAVIOR SET STATUS = #{status},UPDATE_TIME = #{updateTime} WHERE ID = #{id}
+		]]>
+	</update>
+	
+	<select id="findBehavior" resultMap="behavior">
+		SELECT * FROM T_EMPLOYEE_BEHAVIOR WHERE EMPLOYEE_ID = #{employeeId} AND STATUS = '1'
+		<if test="month != null and month !=''">
+			AND MONTH = #{month}
+		</if>
+	</select>
+</mapper>

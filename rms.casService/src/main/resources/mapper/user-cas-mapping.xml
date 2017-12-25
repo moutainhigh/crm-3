@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.cas.user.auth.mapper.UserAuthMapper">
+
+	 <resultMap type="com.hefei.cas.user.auth.po.UserRole" id="userRole">
+		<id column="ID" property="id" />
+		<result column="ROLE_ID" property="roleId" />
+		<result column="USER_ID" property="userId" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<delete id="removeAuth" parameterType="Map">
+		DELETE FROM T_CAS_USER_ROLE WHERE USER_ID=#{userId} AND 
+		
+		<foreach collection="roleIds" item="roleId" index="index" open="(" close=")" separator=" OR ">
+            ROLE_ID = #{roleId}
+        </foreach>
+	</delete>
+	
+	 <insert id="saveAuth" parameterType="java.util.List"> 
+            INSERT INTO T_CAS_USER_ROLE (ID, ROLE_ID,USER_ID,DEL_FLAG,CREATE_TIME, UPDATE_TIME) VALUES
+           <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.id,jdbcType=BIGINT},#{item.roleId,jdbcType=BIGINT},#{item.userId,jdbcType=BIGINT},#{item.delFlag,jdbcType=VARCHAR},
+            #{item.createTime,jdbcType=TIMESTAMP},#{item.updateTime,jdbcType=TIMESTAMP})
+           </foreach>
+  </insert>
+  
+  <select id="getModuleMenus" parameterType="Map" resultMap="com.hefei.cas.module.mapper.ModuleMapper.module">    
+        <![CDATA[
+       	SELECT M.* FROM T_CAS_MODULE M, T_CAS_ROLE_MODULE RM, T_CAS_ROLE R, T_CAS_USER_ROLE UR
+		WHERE UR.USER_ID=#{userId} AND R.COMPANY_ID=#{companyId} AND M.TYPE=#{moduleType} AND M.DEL_FLAG='1' AND RM.DEL_FLAG='1' AND UR.DEL_FLAG='1' AND UR.ROLE_ID=R.ID 
+		AND RM.ROLE_ID=R.ID AND RM.MODULE_ID=M.ID ORDER BY M.ORDERS ASC
+        ]]>
+	</select>
+	<select id="getRoleByUserId" parameterType="Map" resultMap="com.hefei.cas.role.mapper.RoleMapper.role">    
+        <![CDATA[
+       	SELECT R.* FROM T_CAS_ROLE R, T_CAS_USER_ROLE UR WHERE UR.ROLE_ID=R.ID AND UR.USER_ID=#{userId} AND UR.DEL_FLAG=#{userRoleDelFlag} AND R.DEL_FLAG=#{roleDelFlag}
+        ]]>
+	</select>
+	
+	<select id="haveAuthorization" parameterType="Map" resultType="long">    
+       SELECT UR.ID FROM T_CAS_USER_ROLE UR, T_CAS_ROLE R, T_CAS_ROLE_MODULE RM, T_CAS_MODULE M
+		WHERE UR.USER_ID=#{userId}  AND R.COMPANY_ID=#{companyId} AND R.ID=RM.ROLE_ID  AND M.URL=#{url} AND UR.ROLE_ID=RM.ROLE_ID AND RM.MODULE_ID=M.ID
+	</select>
+</mapper>

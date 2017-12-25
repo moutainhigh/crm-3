@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.rms.salary.mapper.SalaryHistoryMapper">
+
+	<resultMap type="com.hefei.rms.salary.po.SalaryHistory" id="salaryHistory">
+		<id column="ID" property="id" />
+		<result column="EMPLOYEE_ID" property="employeeId" />
+		<result column="COMPANY_ID" property="companyId" />
+		<result column="EMPLOYEE_NAME" property="employeeName" />
+		<result column="MONTHLY_BASE_SALARY_BEFORE" property="monthlyBaseSalaryBefore" />
+		<result column="MONTHLY_BONUS_BEFORE" property="monthlyBonusBefore" />
+		<result column="QUARTERLY_BONUS_BEFORE" property="quarterlyBonusBefore" />
+		<result column="YEARLY_BONUS_BEFORE" property="yearlyBonusBefore" />
+		<result column="MONTHLY_BASE_SALARY_AFTER" property="monthlyBaseSalaryAfter" />
+		<result column="MONTHLY_BONUS_AFTER" property="monthlyBonusAfter" />
+		<result column="QUARTERLY_BONUS_AFTER" property="quarterlyBonusAfter" />
+		<result column="YEARLY_BONUS_AFTER" property="yearlyBonusAfter" />
+		<result column="REMARK" property="remark" />
+		<result column="CREATOR" property="creator" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="EFFECT_TIME" property="effectTime" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	<insert id="saveSalaryHistory" parameterType="com.hefei.rms.salary.po.SalaryHistory">   
+		<![CDATA[
+			INSERT INTO T_SALARY_HISTORY(ID,EMPLOYEE_ID,COMPANY_ID,EMPLOYEE_NAME,MONTHLY_BASE_SALARY_BEFORE,MONTHLY_BONUS_BEFORE,
+			QUARTERLY_BONUS_BEFORE,YEARLY_BONUS_BEFORE, MONTHLY_BASE_SALARY_AFTER,MONTHLY_BONUS_AFTER,QUARTERLY_BONUS_AFTER,YEARLY_BONUS_AFTER,
+			REMARK,CREATOR,DEL_FLAG,CREATE_TIME,UPDATE_TIME, EFFECT_TIME) 
+			 VALUES (#{id},#{employeeId},#{companyId},#{employeeName},#{monthlyBaseSalaryBefore},#{monthlyBonusBefore},
+			 #{quarterlyBonusBefore},#{yearlyBonusBefore},#{monthlyBaseSalaryAfter},#{monthlyBonusAfter},#{quarterlyBonusAfter},#{yearlyBonusAfter},
+			#{remark},#{creator},#{delFlag},#{createTime},#{updateTime},#{effectTime})
+		]]>
+	</insert>
+		
+	<select id="findSalaryHistoryPaginationItems" resultMap="salaryHistory" parameterType="map">
+		SELECT H.*
+		FROM T_SALARY_HISTORY H, T_EMPLOYEE_COMPANY C
+		WHERE H.EMPLOYEE_ID=C.EMPLOYEE_ID
+		<if test="companyId != null and companyId !=''">
+			AND H.COMPANY_ID=#{companyId}
+		</if>
+		<if test="employeeId != null and employeeId !=''">
+			AND H.EMPLOYEE_ID=#{employeeId}
+		</if>
+		<if test="cardNo != null and cardNo !=''">
+			AND C.CARD_NO=#{cardNo}
+		</if>
+		<if test="employeeName != null and employeeName !=''">
+			AND H.EMPLOYEE_NAME=#{employeeName}
+		</if>
+			ORDER BY H.CREATE_TIME DESC
+			LIMIT #{startIndex},#{pageSize}
+	</select>
+	<select id="findSalaryHistoryPaginationCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT  COUNT(0)
+		FROM T_SALARY_HISTORY H, T_EMPLOYEE_COMPANY C
+		WHERE H.EMPLOYEE_ID=C.EMPLOYEE_ID
+		<if test="companyId != null and companyId !=''">
+			AND H.COMPANY_ID=#{companyId}
+		</if>
+		<if test="employeeId != null and employeeId !=''">
+			AND H.EMPLOYEE_ID=#{employeeId}
+		</if>
+		<if test="cardNo != null and cardNo !=''">
+			AND C.CARD_NO=#{cardNo}
+		</if>
+		<if test="employeeName != null and employeeName !=''">
+			AND H.EMPLOYEE_NAME=#{employeeName}
+		</if>
+	</select>
+</mapper>

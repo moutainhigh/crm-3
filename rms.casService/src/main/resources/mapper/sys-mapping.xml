@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.cas.system.mapper.SystemMapper">
+
+	 <resultMap type="com.hefei.cas.system.po.Sys" id="sys">
+		<id column="ID" property="id" />
+		<result column="SYSTEM_NAME" property="systemName" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<insert id="saveSystem" parameterType="com.hefei.cas.system.po.Sys">
+		<![CDATA[
+			INSERT INTO T_CAS_SYSTEM(ID, SYSTEM_NAME,DEL_FLAG,CREATE_TIME,UPDATE_TIME) VALUES(#{id}, #{systemName}, #{delFlag},#{createTime}, #{updateTime})
+		]]>
+	</insert>	
+	<select id="getById" parameterType="long" resultMap="sys">    
+        <![CDATA[
+        SELECT * FROM T_CAS_SYSTEM WHERE ID = #{id}
+        ]]>
+	</select>
+	<select id="getBySystemName" parameterType="string" resultMap="sys">    
+        <![CDATA[
+        SELECT * FROM T_CAS_SYSTEM WHERE SYSTEM_NAME = #{systemName}
+        ]]>
+	</select>
+	
+	<select id="getTotalCount" parameterType="Map" resultType="integer">    
+        SELECT COUNT(0) FROM T_CAS_SYSTEM WHERE 1=1 
+        <if test="systemName != null and systemName!=''">
+			 AND SYSTEM_NAME  LIKE CONCAT('%',#{systemName},'%')
+		</if>
+	</select>
+	
+	<select id="findSys" parameterType="Map" resultMap="sys">    
+        SELECT * FROM T_CAS_SYSTEM WHERE 1=1 
+        <if test="systemName != null and systemName!=''">
+			 AND SYSTEM_NAME LIKE CONCAT('%',#{systemName},'%')
+		</if>
+		 LIMIT #{startSize}, #{pageSize}
+	</select>
+</mapper>

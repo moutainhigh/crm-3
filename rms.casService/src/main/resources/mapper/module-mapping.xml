@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hefei.cas.module.mapper.ModuleMapper">
+	<resultMap type="com.hefei.cas.module.po.Module" id="module">
+		<id column="ID" property="id" />
+		<result column="SYSTEM_ID" property="systemId" />
+		<result column="NAME" property="name" />
+		<result column="URL" property="url" />
+		<result column="TYPE" property="type" />
+		<result column="RANK" property="rank" />
+		<result column="REMARK" property="remark" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="PARENT_ID" property="parentId" />
+		<result column="ICON_PATH" property="iconPath" />
+		<result column="ORDERS" property="orders" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<insert id="saveModule" parameterType="com.hefei.cas.module.po.Module">
+		<![CDATA[
+			INSERT INTO T_CAS_MODULE(ID, SYSTEM_ID,NAME,TYPE,URL,RANK,REMARK,DEL_FLAG,PARENT_ID,ICON_PATH,ORDERS,CREATE_TIME,UPDATE_TIME) 
+			VALUES(#{id}, #{systemId},#{name},#{type},#{url},#{rank}, #{remark},  #{delFlag},#{parentId},#{iconPath},#{orders},#{createTime}, #{updateTime})
+		]]>
+	</insert>
+	<update id="deleteModule" parameterType="list">  
+        UPDATE T_CAS_MODULE SET DEL_FLAG=#{delFlag} WHERE 
+         <foreach collection="moduleIds" item="moduleId" index="index" open="(" close=")" separator=" OR ">
+            ID = #{moduleId}
+        </foreach>
+    </update>
+    <select id="getModuleByParentId" parameterType="long" resultMap="module">    
+        <![CDATA[
+        SELECT * FROM T_CAS_MODULE WHERE PARENT_ID=#{parentId}
+        ]]>
+	</select>
+	<select id="getModuleById" parameterType="long" resultMap="module">    
+        <![CDATA[
+        SELECT * FROM T_CAS_MODULE WHERE ID=#{id}
+        ]]>
+	</select>
+	<select id="getModuleBySystemId" parameterType="map" resultMap="module">
+		 SELECT * FROM T_CAS_MODULE WHERE DEL_FLAG = '1'
+		 <if test="type != null and type!=''">
+			 AND TYPE=#{type}
+		</if>
+		AND 
+		 <foreach collection="systemIds" item="systemId" index="index" open="(" close=")" separator=" OR ">
+            SYSTEM_ID = #{systemId}
+        </foreach>
+	</select>
+	<select id="getModuleByRole" parameterType="list" resultMap="module">    
+        	SELECT a.* FROM t_cas_module a 
+			LEFT JOIN t_cas_role_module b ON a.ID = b.MODULE_ID
+			LEFT JOIN t_cas_role c ON b.ROLE_ID = c.ID
+			WHERE a.DEL_FLAG = '1' 
+			AND c.DEL_FLAG = '1'
+			AND 
+			<foreach collection="roleIds" item="roleId" index="index" open="(" close=")" separator=" OR ">
+            c.ID = #{roleId}
+       		</foreach>
+	</select>
+</mapper>

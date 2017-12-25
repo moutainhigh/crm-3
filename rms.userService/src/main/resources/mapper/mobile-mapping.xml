@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.user.mobile.mapper.MobileMapper">
+	<resultMap type="com.hefei.user.mobile.po.Mobile" id="mobile">
+		<id column="ID" property="id" />
+		<result column="USER_ID" property="userId" />
+		<result column="PASSWORD" property="password" />
+		<result column="PWD_VERSION" property="pwdVersion" />
+		<result column="TYPE" property="type" />
+		<result column="IS_CHECK" property="isCheck" />
+		<result column="MOBILE" property="mobile" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<select id="getByMobile" parameterType="map" resultMap="mobile">
+		<![CDATA[
+			SELECT * FROM T_USER_MOBILE WHERE MOBILE=#{mobile} AND TYPE=#{type}
+			]]>
+	</select>
+	
+	<select id="getLoginMobileByUserId" parameterType="map" resultMap="mobile">
+		<![CDATA[
+			SELECT * FROM T_USER_Mobile WHERE USER_ID=#{userId} AND TYPE=#{type}
+			]]>
+	</select>
+	
+	<!-- 添加用户邮箱 -->
+	<insert id="saveMobile" parameterType="com.hefei.user.mobile.po.Mobile">
+		<![CDATA[
+			INSERT INTO T_USER_MOBILE(ID,USER_ID,MOBILE,PASSWORD,PWD_VERSION,TYPE,ISCHECK,DEL_FLAG,CREATE_TIME,UPDATE_TIME)
+			VALUES(#{id},#{userId},#{mobile},#{password},#{pwdVersion},#{type},#{isCheck},#{delFlag},#{createTime},#{updateTime})
+		]]>
+	</insert>
+</mapper>
+

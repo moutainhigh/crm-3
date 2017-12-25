@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hefei.rms.department.mapper.DepartmentMapper">
+	<resultMap type="com.hefei.rms.department.po.Department" id="department">
+		<id column="ID" property="id" />
+		<result column="COMPANY_ID" property="companyId" />
+		<result column="PARENT_ID" property="parentId" />
+		<result column="DEPARTMENT_NAME" property="departmentName" />
+		<result column="DEPARTMENT_INFO" property="departmentInfo" />
+		<result column="DEL_FLAG" property="delFlag" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	
+	<insert id="saveDepartmentInfo" parameterType="com.hefei.rms.department.po.Department">   
+		<![CDATA[
+			INSERT INTO T_DEPARTMENT(ID,COMPANY_ID,PARENT_ID,DEPARTMENT_NAME,DEPARTMENT_INFO,DEL_FLAG,CREATE_TIME,UPDATE_TIME)  VALUES 
+			(#{id},#{companyId},#{parentId},#{departmentName},#{departmentInfo},#{delFlag},#{createTime},#{updateTime})
+		]]>
+	</insert>
+	<update id="updateDepartment" parameterType="Map">
+		<![CDATA[
+			UPDATE T_DEPARTMENT SET DEL_FLAG = #{delFlag},UPDATE_TIME = #{updateTime} WHERE ID = #{id}
+		]]>
+	</update>
+    <select id="getDepartmentById" resultMap="department" parameterType="long">
+		SELECT * FROM T_DEPARTMENT WHERE ID = #{id} AND DEL_FLAG = '1'
+	</select>
+	
+	<select id="getDepartmentByName" resultMap="department" parameterType="Map">
+		SELECT * FROM T_DEPARTMENT WHERE DEL_FLAG = #{delFlag} AND COMPANY_ID=#{companyId} and DEPARTMENT_NAME=#{departmentName}
+	</select>
+	<select id="findDepartmentPaginationByCompanyItems" parameterType="map" resultMap="department">
+			SELECT * FROM T_DEPARTMENT
+			WHERE COMPANY_ID = #{companyId}
+			<if test="delFlag != null and delFlag !=''">
+				 AND DEL_FLAG=#{delFlag}
+			</if>
+			ORDER BY CREATE_TIME
+		 	LIMIT #{startIndex},#{pageSize}
+	</select>
+	<select id="findDepartmentPaginationByCompanyCount" parameterType="map" resultType="integer">
+			SELECT count(0) FROM T_DEPARTMENT
+			WHERE COMPANY_ID = #{companyId}
+			<if test="delFlag != null and delFlag !=''">
+				 AND DEL_FLAG=#{delFlag}
+			</if>
+	</select>
+</mapper>
